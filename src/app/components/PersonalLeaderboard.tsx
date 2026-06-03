@@ -20,7 +20,16 @@ export function PersonalLeaderboard({ userName, intents, onGetStarted }: Persona
   // Calculate progress for each pillar (0-100%)
   const getPillarProgress = (category: 'daily' | 'personal' | 'spiritual' | 'creative') => {
     const categoryIntents = intents.filter(i => i.category === category);
-    if (categoryIntents.length === 0) return 0;
+    if (categoryIntents.length === 0) {
+      // Return dummy data for showcase if no real data exists
+      const dummyProgress: Record<string, number> = {
+        'daily': 65,
+        'personal': 45,
+        'spiritual': 30,
+        'creative': 50
+      };
+      return dummyProgress[category] || 0;
+    }
     const avgProgress = categoryIntents.reduce((sum, i) => sum + i.progress, 0) / categoryIntents.length;
     return Math.round(avgProgress);
   };
@@ -130,65 +139,74 @@ export function PersonalLeaderboard({ userName, intents, onGetStarted }: Persona
               </p>
             </div>
 
-            {/* Circular Progress Graph */}
-            <div className="mb-8 flex justify-center">
-              <svg width="280" height="280" viewBox="0 0 280 280">
-                {/* Background circle */}
-                <circle
-                  cx="140"
-                  cy="140"
-                  r="100"
-                  fill="none"
-                  stroke="#E5E7EB"
-                  strokeWidth="2"
-                  strokeDasharray="4,4"
-                />
-
+            {/* Maturity Spiral Graph */}
+            <div className="mb-8 flex justify-center p-4">
+              <svg width="320" height="320" viewBox="0 0 320 320">
                 {/* Center circle */}
                 <circle
-                  cx="140"
-                  cy="140"
-                  r="60"
+                  cx="160"
+                  cy="160"
+                  r="80"
                   fill="white"
                   stroke="#E5E7EB"
                   strokeWidth="2"
                 />
 
-                {/* Pillar segments */}
+                {/* Pillar circles */}
                 {pillars.map((pillar, index) => {
-                  const angle = (index * 90) - 90; // Start from top, go clockwise
-                  const radians = (angle * Math.PI) / 180;
-                  const x = 140 + 100 * Math.cos(radians);
-                  const y = 140 + 100 * Math.sin(radians);
+                  // Position circles in a square formation around center
+                  const positions = [
+                    { x: 160, y: 50 },  // Top (Daily - Orange)
+                    { x: 270, y: 160 }, // Right (Personal - Blue)
+                    { x: 160, y: 270 }, // Bottom (Spiritual - Green)
+                    { x: 50, y: 160 }   // Left (Creative - Purple)
+                  ];
+                  const pos = positions[index];
 
-                  // Calculate segment arc based on progress
-                  const segmentSize = pillar.progress * 0.9; // 0-90 degrees max per segment
+                  // Calculate circle circumference for progress
+                  const radius = 35;
+                  const circumference = 2 * Math.PI * radius;
+                  const progressOffset = circumference - (circumference * pillar.progress) / 100;
 
                   return (
                     <g key={pillar.id}>
-                      {/* Progress arc */}
-                      {pillar.progress > 0 && (
-                        <path
-                          d={`M 140 140 L ${x} ${y} A 100 100 0 0 1 ${140 + 100 * Math.cos((angle + segmentSize) * Math.PI / 180)} ${140 + 100 * Math.sin((angle + segmentSize) * Math.PI / 180)} Z`}
-                          fill={pillar.color}
-                          opacity="0.3"
-                        />
-                      )}
-
-                      {/* Pillar dot */}
+                      {/* Background ring */}
                       <circle
-                        cx={x}
-                        cy={y}
-                        r="20"
-                        fill={pillar.bgColor}
-                        stroke={pillar.color}
-                        strokeWidth="3"
+                        cx={pos.x}
+                        cy={pos.y}
+                        r={radius}
+                        fill="none"
+                        stroke="#E5E7EB"
+                        strokeWidth="6"
                       />
+                      {/* Progress ring */}
                       <circle
-                        cx={x}
-                        cy={y}
-                        r="12"
+                        cx={pos.x}
+                        cy={pos.y}
+                        r={radius}
+                        fill="none"
+                        stroke={pillar.color}
+                        strokeWidth="6"
+                        strokeDasharray={circumference}
+                        strokeDashoffset={progressOffset}
+                        strokeLinecap="round"
+                        transform={`rotate(-90 ${pos.x} ${pos.y})`}
+                      />
+                      {/* Inner filled circle */}
+                      <circle
+                        cx={pos.x}
+                        cy={pos.y}
+                        r={radius - 10}
                         fill={pillar.color}
+                        opacity="0.9"
+                      />
+                      {/* Center highlight */}
+                      <circle
+                        cx={pos.x}
+                        cy={pos.y}
+                        r={radius - 18}
+                        fill="white"
+                        opacity="0.4"
                       />
                     </g>
                   );
@@ -196,8 +214,8 @@ export function PersonalLeaderboard({ userName, intents, onGetStarted }: Persona
 
                 {/* Center text */}
                 <text
-                  x="140"
-                  y="135"
+                  x="160"
+                  y="153"
                   textAnchor="middle"
                   fontSize="16"
                   fill="#15113C"
@@ -207,8 +225,8 @@ export function PersonalLeaderboard({ userName, intents, onGetStarted }: Persona
                   Psychological
                 </text>
                 <text
-                  x="140"
-                  y="155"
+                  x="160"
+                  y="172"
                   textAnchor="middle"
                   fontSize="16"
                   fill="#15113C"

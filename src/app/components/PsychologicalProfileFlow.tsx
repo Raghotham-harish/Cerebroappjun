@@ -143,26 +143,9 @@ export function PsychologicalProfileFlow({ onComplete, onClose }: PsychologicalP
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col overflow-hidden" style={{ background: currentCategory.gradient }}>
-      {/* Animated Background */}
-      <div className="absolute inset-0 overflow-hidden opacity-40">
-        <div className="absolute blur-[70px] left-[90px] opacity-30 rounded-full size-[420px] top-[30px]" style={{ background: 'radial-gradient(circle, rgba(196,181,253,0.4) 0%, rgba(196,181,253,0) 70%)' }} />
-        <div className="absolute blur-[70px] left-[20px] opacity-25 rounded-full size-[350px] top-[490px]" style={{ background: 'radial-gradient(circle, rgba(251,207,232,0.4) 0%, rgba(251,207,232,0) 70%)' }} />
-        <div className="absolute blur-[65px] left-[40px] opacity-20 rounded-full size-[290px] top-[395px]" style={{ background: 'radial-gradient(circle, rgba(191,219,254,0.4) 0%, rgba(191,219,254,0) 70%)' }} />
-        <div className="absolute blur-[68px] left-[-10px] opacity-20 rounded-full size-[270px] top-[345px]" style={{ background: 'radial-gradient(circle, rgba(254,215,170,0.4) 0%, rgba(254,215,170,0) 70%)' }} />
-      </div>
-
-      {/* Decorative Stars */}
-      <div className="absolute inset-0 overflow-hidden">
-        {[...Array(15)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute bg-[rgba(255,255,255,0.4)] rounded-full size-[4px]"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`
-            }}
-          />
-        ))}
+      {/* Subtle Background Decoration */}
+      <div className="absolute inset-0 overflow-hidden opacity-20">
+        <div className="absolute blur-[100px] left-[10%] rounded-full size-[300px] top-[20%]" style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.3) 0%, rgba(139,92,246,0) 70%)' }} />
       </div>
 
       {/* Content */}
@@ -171,26 +154,26 @@ export function PsychologicalProfileFlow({ onComplete, onClose }: PsychologicalP
         <div className="flex items-center justify-between mb-6">
           <button
             onClick={handleBack}
-            className="flex items-center gap-2 px-3 py-2 rounded-lg"
-            style={{ background: 'rgba(255,255,255,0.6)' }}
+            className="flex items-center gap-2"
+            style={{ background: 'transparent' }}
           >
-            <ArrowLeft className="w-5 h-5" style={{ color: '#4A5565' }} />
-            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', fontWeight: 500, color: '#4A5565' }}>
+            <ArrowLeft className="w-5 h-5" style={{ color: '#6B7280' }} />
+            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', fontWeight: 500, color: '#6B7280' }}>
               Back
             </span>
           </button>
-          <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: '#4A5565' }}>
+          <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: '#6B7280', fontWeight: 500 }}>
             {currentStep + 1} of {CATEGORIES.length}
           </span>
         </div>
 
         {/* Progress Bar */}
-        <div className="bg-[rgba(255,255,255,0.4)] rounded-full h-[6px] mb-8 overflow-hidden">
+        <div className="bg-[rgba(139,92,246,0.2)] rounded-full h-[4px] mb-8 overflow-hidden">
           <div
             className="h-full transition-all duration-500"
             style={{
               width: `${progress}%`,
-              background: 'linear-gradient(to right, #ad46ff, #f6339a, #2b7fff)'
+              background: '#8B5CF6'
             }}
           />
         </div>
@@ -198,63 +181,52 @@ export function PsychologicalProfileFlow({ onComplete, onClose }: PsychologicalP
         {/* Icon */}
         <div className="flex justify-center mb-6">
           <div
-            className="w-12 h-12 rounded-full flex items-center justify-center animate-pulse"
+            className="w-16 h-16 rounded-full flex items-center justify-center"
             style={{
-              background: 'rgba(255,255,255,0.6)',
-              transform: `rotate(${currentStep * 15}deg)`,
-              transition: 'transform 0.5s ease'
+              background: 'rgba(139, 92, 246, 0.15)',
+              border: '2px solid rgba(139, 92, 246, 0.3)'
             }}
           >
-            <Sparkles className="w-6 h-6" style={{ color: '#9810FA' }} />
+            <Sparkles className="w-7 h-7" style={{ color: '#8B5CF6' }} />
           </div>
         </div>
 
         {/* Title */}
-        <h1 className="text-center mb-3" style={{ fontFamily: 'Lora, serif', fontSize: '24px', fontWeight: 600, color: '#101828' }}>
+        <h1 className="text-center mb-2" style={{ fontFamily: 'Lora, serif', fontSize: '22px', fontWeight: 600, color: '#15113C' }}>
           {currentCategory.title}
         </h1>
 
         {/* Subtitle */}
-        <p className="text-center mb-8" style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: '#4A5565' }}>
+        <p className="text-center mb-10" style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: '#6B7280' }}>
           {currentCategory.subtitle}
         </p>
 
         {/* Options */}
-        <div className="flex-1 flex flex-col gap-4 overflow-y-auto pb-4">
+        <div className="flex-1 flex flex-col gap-3 overflow-y-auto pb-4">
           {currentCategory.options.map((option, index) => (
             <button
               key={option.label}
               onClick={() => handleSelect(option.label)}
-              className="relative h-[112px] rounded-2xl overflow-hidden transition-all active:scale-95"
+              className="h-[70px] rounded-2xl transition-all active:scale-98"
               style={{
-                background: `linear-gradient(135deg,
-                  ${index === 0 ? 'rgba(147, 51, 234, 0.15)' :
-                    index === 1 ? 'rgba(59, 130, 246, 0.15)' :
-                    index === 2 ? 'rgba(236, 72, 153, 0.15)' :
-                    'rgba(251, 146, 60, 0.15)'} 0%,
-                  ${index === 0 ? 'rgba(139, 92, 246, 0.25)' :
-                    index === 1 ? 'rgba(37, 99, 235, 0.25)' :
-                    index === 2 ? 'rgba(219, 39, 119, 0.25)' :
-                    'rgba(234, 88, 12, 0.25)'} 100%)`,
-                border: '2px solid rgba(255, 255, 255, 0.6)',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)'
+                background: index === 0
+                  ? 'linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(147, 51, 234, 0.05) 100%)'
+                  : index === 1
+                  ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.05) 100%)'
+                  : index === 2
+                  ? 'linear-gradient(135deg, rgba(236, 72, 153, 0.1) 0%, rgba(219, 39, 119, 0.05) 100%)'
+                  : 'linear-gradient(135deg, rgba(251, 146, 60, 0.1) 0%, rgba(234, 88, 12, 0.05) 100%)',
+                border: '1px solid rgba(139, 92, 246, 0.2)',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)'
               }}
             >
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div
-                  className="absolute inset-0 opacity-80"
-                  style={{
-                    background: 'linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.3) 100%)'
-                  }}
-                />
+              <div className="flex items-center justify-center h-full">
                 <span
-                  className="relative z-10 drop-shadow-[0px_2px_8px_rgba(0,0,0,0.3)]"
                   style={{
                     fontFamily: 'Inter, sans-serif',
-                    fontSize: '24px',
-                    fontWeight: 600,
-                    color: 'white',
-                    textShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                    fontSize: '18px',
+                    fontWeight: 500,
+                    color: '#15113C'
                   }}
                 >
                   {option.label}
