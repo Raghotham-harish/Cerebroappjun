@@ -1,7 +1,7 @@
 
-  # CerebroApp Jun
+  # CerebroApp July
 
-  This is a code bundle for CerebroApp Jun. The original project is available at https://www.figma.com/design/jKhbO6aTHXSK7DR9eYKwmg/CerebroApp-Jun.
+  This is a code bundle for CerebroApp July. The original project is available at https://www.figma.com/design/jKhbO6aTHXSK7DR9eYKwmg/CerebroApp-July.
 
   ## Running the code
 

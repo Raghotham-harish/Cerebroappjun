@@ -28,7 +28,7 @@ export function GratitudeExercise({ onComplete, onSwitch }: GratitudeExercisePro
     <div 
       className="fixed inset-0 flex flex-col items-center justify-center px-6"
       style={{ 
-        background: 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)',
+        background: 'linear-gradient(180deg, #EDE9FE 0%, #F5F3FF 100%)',
         zIndex: 1000
       }}
     >
@@ -36,8 +36,8 @@ export function GratitudeExercise({ onComplete, onSwitch }: GratitudeExercisePro
       <div 
         className="w-20 h-20 rounded-full flex items-center justify-center mb-8"
         style={{ 
-          background: '#F59E0B',
-          boxShadow: '0 8px 24px rgba(245, 158, 11, 0.3)'
+          background: '#8B5CF6',
+          boxShadow: '0 8px 24px rgba(139, 92, 246, 0.3)'
         }}
       >
         <Heart className="w-10 h-10" style={{ color: 'white' }} fill="white" />
@@ -61,7 +61,8 @@ export function GratitudeExercise({ onComplete, onSwitch }: GratitudeExercisePro
         style={{ 
           fontFamily: 'Inter, sans-serif',
           color: '#78350F',
-          fontStyle: 'italic'
+          fontStyle: 'italic',
+          color: '#4C1D95'
         }}
       >
         {currentPrompt}
@@ -74,11 +75,11 @@ export function GratitudeExercise({ onComplete, onSwitch }: GratitudeExercisePro
         placeholder="Write your thoughts here..."
         className="w-full max-w-md px-5 py-4 rounded-3xl text-sm border-2 focus:outline-none transition-colors resize-none mb-8"
         rows={5}
-        style={{ 
-          fontFamily: 'Inter, sans-serif', 
+        style={{
+          fontFamily: 'Inter, sans-serif',
           color: '#15113C',
           background: 'white',
-          borderColor: gratitudeText.trim() ? '#F59E0B' : '#FDE68A'
+          borderColor: gratitudeText.trim() ? '#8B5CF6' : '#DDD6FE'
         }}
       />
 
@@ -89,9 +90,9 @@ export function GratitudeExercise({ onComplete, onSwitch }: GratitudeExercisePro
           className="flex-1 py-4 rounded-full flex items-center justify-center gap-2"
           style={{
             background: 'white',
-            border: '2px solid #FDE68A',
+            border: '1.5px solid rgba(139,92,246,0.25)',
             fontFamily: 'Inter, sans-serif',
-            color: '#78350F',
+            color: '#6D28D9',
             fontSize: '14px',
             fontWeight: 500
           }}
@@ -103,8 +104,8 @@ export function GratitudeExercise({ onComplete, onSwitch }: GratitudeExercisePro
           onClick={handleComplete}
           disabled={!gratitudeText.trim()}
           className="flex-1 py-4 rounded-full transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-          style={{ 
-            background: gratitudeText.trim() ? 'linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%)' : '#E5E7EB',
+          style={{
+            background: gratitudeText.trim() ? '#8B5CF6' : '#E5E7EB',
             color: 'white',
             fontFamily: 'Inter, sans-serif',
             fontWeight: 600,

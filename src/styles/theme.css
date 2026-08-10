@@ -121,6 +121,192 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+/* ── CereBro global interaction & button utilities ──────────────────────────── */
+
+/* Remove browser tap highlight — app provides its own feedback */
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+/* Universal active-press scale for all buttons */
+button {
+  transition: transform 0.1s ease, opacity 0.1s ease;
+}
+button:active {
+  transform: scale(0.97);
+}
+
+/* ── Ripple effect (CSS-only, fires on :active) ───────────────────────────── */
+.cb-ripple {
+  position: relative;
+  overflow: hidden;
+}
+.cb-ripple::after {
+  content: '';
+  display: block;
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.35) 10%, transparent 10.01%);
+  background-repeat: no-repeat;
+  background-position: 50%;
+  transform: scale(12);
+  opacity: 0;
+  transition: transform 0.45s ease, opacity 0.8s ease;
+  pointer-events: none;
+}
+.cb-ripple:active::after {
+  transform: scale(0);
+  opacity: 1;
+  transition: 0s;
+}
+
+/* Dark-surface ripple (on coloured/dark buttons) */
+.cb-ripple-dark::after {
+  background-image: radial-gradient(circle, rgba(0,0,0,0.12) 10%, transparent 10.01%);
+}
+
+/* ── Button component classes ─────────────────────────────────────────────── */
+
+/* Primary — solid purple pill */
+.cb-btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 16px 24px;
+  border-radius: 9999px;
+  background: #8B5CF6;
+  color: white;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.1s ease, box-shadow 0.2s ease;
+}
+.cb-btn-primary:active {
+  transform: scale(0.97);
+  box-shadow: 0 2px 8px rgba(139,92,246,0.3);
+}
+.cb-btn-primary:disabled {
+  background: #D1D5DB;
+  color: #9CA3AF;
+  cursor: not-allowed;
+  transform: none;
+}
+.cb-btn-primary::after {
+  content: '';
+  display: block;
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.25) 10%, transparent 10.01%);
+  background-repeat: no-repeat;
+  background-position: 50%;
+  transform: scale(12);
+  opacity: 0;
+  transition: transform 0.4s ease, opacity 0.7s ease;
+  pointer-events: none;
+}
+.cb-btn-primary:active::after {
+  transform: scale(0);
+  opacity: 1;
+  transition: 0s;
+}
+
+/* Ghost / secondary — frosted white */
+.cb-btn-ghost {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px 24px;
+  border-radius: 9999px;
+  background: rgba(255,255,255,0.8);
+  color: #6D28D9;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  border: 1.5px solid #EDE9FE;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.1s ease;
+}
+.cb-btn-ghost:active {
+  transform: scale(0.97);
+  background: rgba(237,233,254,0.9);
+}
+
+/* Icon circle button — 40×40 back/mic/toggle */
+.cb-btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.7);
+  border: 1.5px solid rgba(0,0,0,0.08);
+  cursor: pointer;
+  transition: transform 0.1s ease, background 0.15s ease;
+  position: relative;
+  overflow: hidden;
+}
+.cb-btn-icon:active {
+  transform: scale(0.92);
+  background: rgba(237,233,254,0.9);
+}
+
+/* Voice mic FAB (floating, always bottom-right) */
+.cb-mic-fab {
+  position: fixed;
+  bottom: 88px; /* above tab bar */
+  right: 20px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #8B5CF6;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(139,92,246,0.4);
+  z-index: 40;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+.cb-mic-fab:active {
+  transform: scale(0.92);
+  box-shadow: 0 2px 8px rgba(139,92,246,0.3);
+}
+.cb-mic-fab.active {
+  background: #6D28D9;
+  box-shadow: 0 4px 20px rgba(109,40,217,0.5);
+  animation: mic-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes mic-pulse {
+  0%, 100% { box-shadow: 0 4px 20px rgba(109,40,217,0.5); }
+  50%       { box-shadow: 0 4px 28px rgba(109,40,217,0.8), 0 0 0 6px rgba(109,40,217,0.15); }
+}
+
+/* ── Card interactive states ─────────────────────────────────────────────── */
+.cb-card-btn {
+  transition: transform 0.12s ease, box-shadow 0.15s ease;
+}
+.cb-card-btn:active {
+  transform: scale(0.98);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

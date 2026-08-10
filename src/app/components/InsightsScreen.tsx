@@ -86,7 +86,7 @@ export function InsightsScreen({ onViewBurnoutAnalytics }: InsightsScreenProps =
               fontWeight: 600
             }}
           >
-            ZONE OF WELLBEING (ZOW)
+            ZONE OF EMOTIONAL REGULATION (ZER)
           </p>
           <p 
             className="text-sm mb-3"
@@ -204,15 +204,15 @@ export function InsightsScreen({ onViewBurnoutAnalytics }: InsightsScreenProps =
         <div
           className="p-5 rounded-3xl"
           style={{
-            background: 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)',
-            border: '2px solid #FBBF24'
+            background: 'linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%)',
+            border: '1.5px solid rgba(139,92,246,0.25)'
           }}
         >
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-3">
               <div
                 className="w-10 h-10 rounded-full flex items-center justify-center"
-                style={{ background: '#F59E0B' }}
+                style={{ background: '#8B5CF6' }}
               >
                 <Activity className="w-5 h-5" style={{ color: 'white' }} />
               </div>
@@ -222,7 +222,7 @@ export function InsightsScreen({ onViewBurnoutAnalytics }: InsightsScreenProps =
                   style={{
                     fontFamily: 'Lora, serif',
                     fontWeight: 500,
-                    color: '#78350F'
+                    color: '#15113C'
                   }}
                 >
                   Burnout Analytics
@@ -231,14 +231,14 @@ export function InsightsScreen({ onViewBurnoutAnalytics }: InsightsScreenProps =
                   className="text-xs"
                   style={{
                     fontFamily: 'Inter, sans-serif',
-                    color: '#92400E'
+                    color: '#6D28D9'
                   }}
                 >
                   Track your burnout risk over time
                 </p>
               </div>
             </div>
-            <ArrowRight className="w-5 h-5" style={{ color: '#F59E0B' }} />
+            <ArrowRight className="w-5 h-5" style={{ color: '#8B5CF6' }} />
           </div>
         </div>
       </button>

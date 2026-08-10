@@ -8,17 +8,17 @@ interface EnhancedHomeScreenProps {
 
 export function EnhancedHomeScreen({ userName, oracleName }: EnhancedHomeScreenProps) {
   const practices = [
-    { name: "Breathe", time: "5 min", gradient: "linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%)", icon: Wind },
+    { name: "Breathe", time: "5 min", gradient: "linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%)", icon: Wind },
     { name: "Reflect", time: "10 min", gradient: "linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%)", icon: BookOpen },
-    { name: "Journal", time: "Timed", gradient: "linear-gradient(135deg, #FECACA 0%, #FCA5A5 100%)", icon: BookHeart },
-    { name: "Well-check", time: "1 min", gradient: "linear-gradient(135deg, #FED7AA 0%, #FDBA74 100%)", icon: CheckSquare },
-    { name: "Body-scan", time: "12 min", gradient: "linear-gradient(135deg, #A7F3D0 0%, #6EE7B7 100%)", icon: Heart },
-    { name: "Gratitude", time: "5-10 min", gradient: "linear-gradient(135deg, #FBCFE8 0%, #F9A8D4 100%)", icon: Calendar }
+    { name: "Journal", time: "Timed", gradient: "linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%)", icon: BookHeart },
+    { name: "Well-check", time: "1 min", gradient: "linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%)", icon: CheckSquare },
+    { name: "Body-scan", time: "12 min", gradient: "linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%)", icon: Heart },
+    { name: "Gratitude", time: "5-10 min", gradient: "linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%)", icon: Calendar }
   ];
 
   const microActivities = [
-    { name: "Morning Anchor", desc: "Daily · Values", xp: "+30 XP", gradient: "linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)", icon: Sparkles },
-    { name: "Breath Reset", desc: "4 min · Triggered", xp: "+40 XP", gradient: "linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%)", icon: Wind },
+    { name: "Morning Anchor", desc: "Daily · Values", xp: "+30 XP", gradient: "linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%)", icon: Sparkles },
+    { name: "Breath Reset", desc: "4 min · Triggered", xp: "+40 XP", gradient: "linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%)", icon: Wind },
     { name: "Inner Observer", desc: "7 min · Awareness", xp: "+45 XP", gradient: "linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%)", icon: Users }
   ];
 
@@ -67,7 +67,7 @@ export function EnhancedHomeScreen({ userName, oracleName }: EnhancedHomeScreenP
         <div className="flex items-center gap-2 mb-3">
           <div 
             className="w-5 h-5 flex items-center justify-center"
-            style={{ color: '#F59E0B' }}
+            style={{ color: '#8B5CF6' }}
           >
             <Flame className="w-5 h-5" />
           </div>
@@ -86,7 +86,7 @@ export function EnhancedHomeScreen({ userName, oracleName }: EnhancedHomeScreenP
           <div className="flex items-center gap-2">
             <div 
               className="w-6 h-6 rounded-full flex items-center justify-center"
-              style={{ background: '#FBBF24' }}
+              style={{ background: '#8B5CF6' }}
             >
               <span 
                 className="text-xs"
@@ -124,13 +124,13 @@ export function EnhancedHomeScreen({ userName, oracleName }: EnhancedHomeScreenP
 
         <div 
           className="h-2.5 rounded-full"
-          style={{ background: 'rgba(251, 191, 36, 0.2)' }}
+          style={{ background: 'rgba(139, 92, 246, 0.12)' }}
         >
-          <div 
+          <div
             className="h-full rounded-full"
-            style={{ 
+            style={{
               width: '68%',
-              background: '#FBBF24'
+              background: '#8B5CF6'
             }}
           />
         </div>
@@ -140,14 +140,14 @@ export function EnhancedHomeScreen({ userName, oracleName }: EnhancedHomeScreenP
       <div 
         className="p-4 rounded-3xl mb-4"
         style={{
-          background: 'rgba(251, 223, 199, 0.95)',
-          border: '2px solid #F4D1C7'
+          background: 'rgba(237, 233, 254, 0.95)',
+          border: '1.5px solid rgba(139,92,246,0.25)'
         }}
       >
         <div className="flex items-start gap-3">
-          <div 
+          <div
             className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0"
-            style={{ background: '#F4A261' }}
+            style={{ background: '#8B5CF6' }}
           >
             <Heart className="w-5 h-5" style={{ color: 'white' }} />
           </div>
@@ -177,7 +177,7 @@ export function EnhancedHomeScreen({ userName, oracleName }: EnhancedHomeScreenP
               <button 
                 className="px-4 py-2 rounded-full text-xs flex-1 flex items-center justify-center gap-1.5"
                 style={{
-                  background: '#F59E0B',
+                  background: '#8B5CF6',
                   color: 'white',
                   fontFamily: 'Inter, sans-serif',
                   fontWeight: 600
@@ -186,12 +186,12 @@ export function EnhancedHomeScreen({ userName, oracleName }: EnhancedHomeScreenP
                 <Wind className="w-3.5 h-3.5" />
                 Breathe Now
               </button>
-              <button 
+              <button
                 className="px-4 py-2 rounded-full text-xs flex-1 flex items-center justify-center gap-1.5"
                 style={{
                   background: 'white',
-                  border: '2px solid #F4D1C7',
-                  color: '#F59E0B',
+                  border: '1.5px solid rgba(139,92,246,0.25)',
+                  color: '#7C3AED',
                   fontFamily: 'Inter, sans-serif',
                   fontWeight: 600
                 }}
@@ -316,10 +316,10 @@ export function EnhancedHomeScreen({ userName, oracleName }: EnhancedHomeScreenP
 
         <div className="grid grid-cols-2 gap-3">
           {[
-            { name: "Anxiety", change: "↓23%", color: "#F59E0B", positive: true, icon: AlertCircle },
-            { name: "Calm", change: "↑18%", color: "#06B6D4", positive: true, icon: Smile },
-            { name: "Energy", change: "↑22%", color: "#FBBF24", positive: true, icon: Zap },
-            { name: "Resilience", change: "↑19%", color: "#10B981", positive: true, icon: Shield }
+            { name: "Anxiety",    change: "↓23%", iconBg: "#FFE4E6", lineColor: "#FDA4AF", positive: true,  icon: AlertCircle },
+            { name: "Calm",       change: "↑18%", iconBg: "#CCFBF1", lineColor: "#5EEAD4", positive: true,  icon: Smile },
+            { name: "Energy",     change: "↑22%", iconBg: "#FEF3C7", lineColor: "#FCD34D", positive: true,  icon: Zap },
+            { name: "Resilience", change: "↑19%", iconBg: "#EDE9FE", lineColor: "#A78BFA", positive: true,  icon: Shield }
           ].map((emotion) => (
             <div
               key={emotion.name}
@@ -331,15 +331,15 @@ export function EnhancedHomeScreen({ userName, oracleName }: EnhancedHomeScreenP
             >
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <div 
-                    className="w-6 h-6 rounded-lg flex items-center justify-center" 
-                    style={{ background: emotion.color }}
+                  <div
+                    className="w-6 h-6 rounded-lg flex items-center justify-center"
+                    style={{ background: emotion.iconBg }}
                   >
-                    <emotion.icon className="w-3.5 h-3.5" style={{ color: 'white', strokeWidth: 2.5 }} />
+                    <emotion.icon className="w-3.5 h-3.5" style={{ color: '#15113C', strokeWidth: 2.5 }} />
                   </div>
-                  <span 
+                  <span
                     className="text-sm"
-                    style={{ 
+                    style={{
                       fontFamily: 'Inter, sans-serif',
                       color: '#15113C',
                       fontWeight: 600
@@ -348,25 +348,25 @@ export function EnhancedHomeScreen({ userName, oracleName }: EnhancedHomeScreenP
                     {emotion.name}
                   </span>
                 </div>
-                <span 
+                <span
                   className="text-xs"
-                  style={{ 
+                  style={{
                     fontFamily: 'Inter, sans-serif',
-                    color: emotion.positive ? '#10B981' : '#EF4444',
+                    color: '#15113C',
                     fontWeight: 600
                   }}
                 >
                   {emotion.change}
                 </span>
               </div>
-              
+
               {/* Mini trend line */}
               <div className="h-8">
                 <svg width="100%" height="32" className="w-full">
                   <polyline
                     points={emotion.positive ? "0,28 25,24 50,20 75,16 100,12" : "0,12 25,16 50,20 75,24 100,28"}
                     fill="none"
-                    stroke={emotion.color}
+                    stroke={emotion.lineColor}
                     strokeWidth="2"
                     vectorEffect="non-scaling-stroke"
                   />
@@ -584,8 +584,8 @@ export function EnhancedHomeScreen({ userName, oracleName }: EnhancedHomeScreenP
           <span 
             className="px-3 py-1.5 rounded-full text-xs ml-3"
             style={{
-              background: '#DBEAFE',
-              color: '#3B82F6',
+              background: '#EDE9FE',
+              color: '#7C3AED',
               fontFamily: 'Inter, sans-serif',
               fontWeight: 600
             }}

@@ -7,15 +7,18 @@ import { DailyIntention } from "./DailyIntention";
 
 interface ZOWScreenProps {
   userName: string;
+  userIntents?: string[];
   onComplete: () => void;
 }
 
-export function ZOWScreen({ userName, onComplete }: ZOWScreenProps) {
+export function ZOWScreen({ userName, userIntents = [], onComplete }: ZOWScreenProps) {
   const [currentStep, setCurrentStep] = useState<'capture' | 'leaderboard' | 'history' | 'intention'>('capture');
-  const [currentZOW, setCurrentZOW] = useState<number>(0);
+  const [currentZER, setCurrentZER] = useState<number>(0);
+  const [currentTrigger, setCurrentTrigger] = useState<string | undefined>(undefined);
 
-  const handleZOWComplete = (zowLevel: number) => {
-    setCurrentZOW(zowLevel);
+  const handleZERComplete = (zowLevel: number, trigger?: string) => {
+    setCurrentZER(zowLevel);
+    setCurrentTrigger(trigger);
     setCurrentStep('leaderboard');
   };
 
@@ -52,13 +55,13 @@ export function ZOWScreen({ userName, onComplete }: ZOWScreenProps) {
 
       {/* Content */}
       {currentStep === 'capture' ? (
-        <ZOWCapture userName={userName} onComplete={handleZOWComplete} />
+        <ZOWCapture userName={userName} onComplete={handleZERComplete} />
       ) : currentStep === 'leaderboard' ? (
-        <ZOWLeaderboard currentZOW={currentZOW} onContinue={handleLeaderboardContinue} onViewHistory={handleViewHistory} />
+        <ZOWLeaderboard currentZER={currentZER} trigger={currentTrigger} onContinue={handleLeaderboardContinue} onViewHistory={handleViewHistory} />
       ) : currentStep === 'history' ? (
         <ZOWHistory onBack={handleBackFromHistory} />
       ) : (
-        <DailyIntention userName={userName} onComplete={handleIntentionComplete} />
+        <DailyIntention userName={userName} userIntents={userIntents} onComplete={handleIntentionComplete} />
       )}
     </div>
   );

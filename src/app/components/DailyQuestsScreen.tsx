@@ -334,44 +334,44 @@ export function DailyQuestsScreen() {
       <div 
         className="p-5 rounded-3xl mb-4"
         style={{
-          background: 'linear-gradient(135deg, #FED7AA 0%, #FDBA74 100%)',
-          border: '2px solid #FB923C'
+          background: 'linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%)',
+          border: '1.5px solid rgba(139,92,246,0.25)'
         }}
       >
-        <p 
+        <p
           className="text-xs mb-4"
-          style={{ 
+          style={{
             fontFamily: 'Inter, sans-serif',
-            color: '#92400E',
+            color: '#6D28D9',
             letterSpacing: '0.05em',
-            fontWeight: 500
+            fontWeight: 600
           }}
         >
           CONSISTENCY STREAK
         </p>
 
         <div className="flex items-center justify-between">
-          <p 
+          <p
             className="text-2xl"
-            style={{ 
+            style={{
               fontFamily: 'Lora, serif',
               fontWeight: 600,
               color: '#15113C'
             }}
           >
-            14 days <span className="text-base" style={{ color: '#EF4444' }}>🔥</span>
+            14 days
           </p>
 
-          <p 
+          <p
             className="text-xs px-3 py-1.5 rounded-full"
-            style={{ 
+            style={{
               fontFamily: 'Inter, sans-serif',
-              color: '#EF4444',
-              background: 'rgba(254, 226, 226, 0.9)',
+              color: '#6D28D9',
+              background: 'rgba(255,255,255,0.7)',
               fontWeight: 600
             }}
           >
-            Don't break it!
+            Keep it up!
           </p>
         </div>
 
@@ -381,8 +381,8 @@ export function DailyQuestsScreen() {
               key={i}
               className="w-10 h-10 rounded-xl flex items-center justify-center"
               style={{
-                background: day.completed ? '#FBBF24' : 'rgba(255,255,255,0.4)',
-                border: day.completed ? 'none' : '2px solid rgba(251, 191, 36, 0.3)'
+                background: day.completed ? '#8B5CF6' : 'rgba(255,255,255,0.5)',
+                border: day.completed ? 'none' : '1.5px solid rgba(139,92,246,0.2)'
               }}
             >
               {day.completed && (

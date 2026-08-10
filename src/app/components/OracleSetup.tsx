@@ -110,8 +110,8 @@ export function OracleSetup({ userName, onComplete, permissionGranted, onPermiss
   ];
 
   const questions = {
-    name: "What would you like to name your oracle?",
-    avatar: "Would you like to add a face to your oracle?",
+    name: "What would you like to name your Oracle?",
+    avatar: "Would you like to add a face to your Oracle?",
     voice: "Which voice personality speaks to you?"
   };
 
@@ -177,23 +177,36 @@ export function OracleSetup({ userName, onComplete, permissionGranted, onPermiss
   }, [step, permissionGranted]);
 
   const startVoiceCapture = () => {
-    setIsListening(true);
-    
-    // Simulate voice recognition
-    setTimeout(() => {
-      const mockResponses = {
-        name: ["Luna", "Sage", "Aurora", "Aura", "Zen"],
-        avatar: [],
-        voice: []
-      };
-      
-      if (step === 'name') {
-        const randomResponse = mockResponses.name[Math.floor(Math.random() * mockResponses.name.length)];
-        setTextValue(randomResponse);
-        setOracleName(randomResponse);
+    const SpeechRecognition =
+      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      // Browser doesn't support speech recognition — do nothing, user types manually
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => setIsListening(true);
+
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript.trim();
+      if (step === 'name' && transcript) {
+        // Capitalise first letter of each word for a name
+        const named = transcript.replace(/\b\w/g, (c: string) => c.toUpperCase());
+        setOracleName(named);
+        setTextValue(named);
       }
       setIsListening(false);
-    }, 2500);
+    };
+
+    recognition.onerror = () => setIsListening(false);
+    recognition.onend = () => setIsListening(false);
+
+    recognition.start();
   };
 
   const handleStartListening = () => {
@@ -432,7 +445,7 @@ export function OracleSetup({ userName, onComplete, permissionGranted, onPermiss
               color: '#6B7280'
             }}
           >
-            Let's create your personal oracle - a mirror to reflect your thoughts and guide your wellness journey.
+            Let's create your Personal Oracle - a mirror to reflect your thoughts and guide your wellness journey.
           </p>
 
           {/* CTA Button */}
@@ -528,7 +541,7 @@ export function OracleSetup({ userName, onComplete, permissionGranted, onPermiss
               {step === 'name' && (
                 <>
                   <p className="text-sm text-gray-600 mb-8 max-w-md" style={{ fontFamily: 'Inter, sans-serif' }}>
-                    Give your oracle a name that resonates with you. This will be your companion on your wellness journey.
+                    Give your Oracle a name that resonates with you. This will be your companion on your wellness journey.
                   </p>
                   
                   {/* Voice Wave Orb */}
@@ -560,7 +573,7 @@ export function OracleSetup({ userName, onComplete, permissionGranted, onPermiss
                   <div className="w-full max-w-md mb-8">
                     <input
                       type="text"
-                      placeholder="Enter oracle name..."
+                      placeholder="Enter Oracle name..."
                       value={oracleName}
                       onChange={(e) => {
                         setOracleName(e.target.value);
@@ -582,7 +595,7 @@ export function OracleSetup({ userName, onComplete, permissionGranted, onPermiss
               {step === 'avatar' && (
                 <>
                   <p className="text-sm text-gray-600 mb-8 max-w-md" style={{ fontFamily: 'Inter, sans-serif' }}>
-                    Upload a photo or choose a color theme that represents your oracle's personality.
+                    Upload a photo or choose a color theme that represents your Oracle's personality.
                   </p>
                   
                   <div className="mb-8 w-full flex flex-col items-center">
@@ -593,22 +606,26 @@ export function OracleSetup({ userName, onComplete, permissionGranted, onPermiss
 
                     {/* Theme Selector Cards with integrated avatar */}
                     <div className="w-full max-w-3xl mb-8">
-                      <div 
-                        className="relative pb-6" 
-                        style={{ 
+                      <div
+                        className="relative"
+                        style={{
                           perspective: '1200px',
-                          perspectiveOrigin: 'center center'
+                          perspectiveOrigin: 'center center',
+                          overflowX: 'auto',
+                          overflowY: 'visible',
+                          scrollbarWidth: 'none',
+                          msOverflowStyle: 'none',
+                          WebkitOverflowScrolling: 'touch',
+                          paddingTop: '24px',
+                          paddingBottom: '24px',
                         }}
                       >
-                        <div 
-                          className="flex gap-6 items-end overflow-x-auto scrollbar-hide" 
-                          style={{ 
+                        <div
+                          className="flex gap-6 items-center"
+                          style={{
                             minWidth: '100%',
-                            scrollbarWidth: 'none',
-                            msOverflowStyle: 'none',
-                            WebkitOverflowScrolling: 'touch',
                             paddingLeft: '20px',
-                            paddingRight: '20px'
+                            paddingRight: '20px',
                           }}
                         >
                           {themeOptions.map((theme, index) => {
@@ -624,10 +641,11 @@ export function OracleSetup({ userName, onComplete, permissionGranted, onPermiss
                                 onClick={() => setSelectedTheme(theme.id)}
                                 className="flex-shrink-0 transition-all duration-500 ease-out"
                                 style={{
-                                  transform: `scale(${scale}) translateZ(${isCenter ? '40px' : '0px'})`,
+                                  transform: `scale(${scale})`,
                                   opacity: opacity,
-                                  transformStyle: 'preserve-3d',
-                                  zIndex: isCenter ? 10 : 5 - distance
+                                  zIndex: isCenter ? 10 : 5 - distance,
+                                  marginLeft: isCenter ? '8px' : '0px',
+                                  marginRight: isCenter ? '8px' : '0px',
                                 }}
                               >
                                 <div
@@ -891,11 +909,27 @@ export function OracleSetup({ userName, onComplete, permissionGranted, onPermiss
 
                             {/* Selected indicator dot */}
                             {isSelected && (
-                              <div 
+                              <div
                                 className="absolute top-3 right-3 w-2.5 h-2.5 rounded-full"
                                 style={{ background: '#A78BFA' }}
                               />
                             )}
+
+                            {/* Voice name label at bottom */}
+                            <div className="absolute bottom-0 left-0 right-0 pb-3 flex justify-center">
+                              <span
+                                className="text-xs px-2 py-0.5 rounded-full"
+                                style={{
+                                  fontFamily: 'Inter, sans-serif',
+                                  fontWeight: 600,
+                                  color: voice.waveColor,
+                                  background: 'rgba(255,255,255,0.75)',
+                                  letterSpacing: '0.01em',
+                                }}
+                              >
+                                {voice.name}
+                              </span>
+                            </div>
                           </div>
                         );
                       })}

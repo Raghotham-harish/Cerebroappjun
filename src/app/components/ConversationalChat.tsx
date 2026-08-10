@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Mic, Volume2, VolumeX, ArrowUp, Heart, BookOpen, Wind, Award } from "lucide-react";
+import { Mic, Volume2, VolumeX, ArrowUp, Heart, BookOpen, Wind, Award, Lightbulb } from "lucide-react";
 import { VoiceWaveOrb } from "./VoiceWaveOrb";
 import { BottomNav } from "./BottomNav";
 import { AnimatedLogo } from "./AnimatedLogo";
@@ -33,14 +33,39 @@ import { MultiTaskRelayGame } from "./games/MultiTaskRelayGame";
 import { ZenSandGame } from "./games/ZenSandGame";
 import { CloudDriftGame } from "./games/CloudDriftGame";
 import { usePoints } from "../contexts/PointsContext";
+import { BreathLoopsScreen } from "./tools/BreathLoopsScreen";
+import { DisidentificationScreen } from "./tools/DisidentificationScreen";
+import { GuidedImageryScreen } from "./tools/GuidedImageryScreen";
+import { GratitudeJournalScreen } from "./tools/GratitudeJournalScreen";
+import { WillTrainingScreen } from "./tools/WillTrainingScreen";
+import { RitualBuilderScreen } from "./tools/RitualBuilderScreen";
+import { SubpersonalityWorkScreen } from "./tools/SubpersonalityWorkScreen";
+import { BodyScanScreen } from "./tools/BodyScanScreen";
+import { ZERScreen } from "./tools/ZERScreen";
+import { AffirmationsScreen } from "./tools/AffirmationsScreen";
+import { CrisisGroundingScreen } from "./tools/CrisisGroundingScreen";
+import { SleepRitualScreen } from "./tools/SleepRitualScreen";
 
 interface ConversationalChatProps {
   oracleName: string;
   userName: string;
   onClose: () => void;
+  completedActivity?: 'zer' | 'breathing' | 'gratitude' | 'tool' | null;
 }
 
-type MessageType = 
+type ContextualCard = {
+  id: string;
+  emoji: string;
+  title: string;
+  description: string;
+  ctaLabel?: string;
+  ctaAction?: string; // tool id or 'reflect'
+  bg: string;
+  border: string;
+  btnColor: string;
+};
+
+type MessageType =
   | { type: 'oracle'; text: string }
   | { type: 'user'; text: string; hasAudio?: boolean }
   | { type: 'action-card'; activity: 'breathing' | 'gratitude' | 'journaling'; title: string; description: string; completed?: boolean }
@@ -49,9 +74,113 @@ type MessageType =
   | { type: 'zow-prompt'; }
   | { type: 'personalized-question'; text: string }
   | { type: 'assessment-card'; title: string; description: string }
-  | { type: 'acknowledgement'; text: string; emotion: string };
+  | { type: 'acknowledgement'; text: string; emotion: string }
+  | { type: 'contextual-actions'; intro: string; cards: ContextualCard[] };
 
-export function ConversationalChat({ oracleName, userName }: ConversationalChatProps) {
+// ── Contextual card sets ──────────────────────────────────────────────────────
+const CONTEXTUAL_SETS: Record<string, { intro: string; cards: ContextualCard[] }> = {
+  zer: {
+    intro: "Thank you for checking in. Here's what might support you right now.",
+    cards: [
+      {
+        id: 'zer-body',
+        emoji: '🌿',
+        title: 'Quick Body Scan',
+        description: 'Ground yourself in 3 minutes by scanning from head to feet.',
+        ctaLabel: 'Start body scan',
+        ctaAction: 'bodyscan',
+        bg: '#EDE9FE', border: '#C4B5FD', btnColor: '#8B5CF6',
+      },
+      {
+        id: 'zer-breath',
+        emoji: '🌬️',
+        title: 'Short Breath Loop',
+        description: 'A 2-minute breathing cycle to settle your nervous system.',
+        ctaLabel: 'Try breath loop',
+        ctaAction: 'breath',
+        bg: '#EDE9FE', border: '#C4B5FD', btnColor: '#8B5CF6',
+      },
+      {
+        id: 'zer-reflect',
+        emoji: '💭',
+        title: 'What needs your attention right now?',
+        description: 'Notice what is present — no need to fix it. Just name it.',
+        ctaLabel: 'Open journal',
+        ctaAction: 'gratitude',
+        bg: '#EDE9FE', border: '#C4B5FD', btnColor: '#8B5CF6',
+      },
+    ],
+  },
+  breathing: {
+    intro: "Well done — your nervous system appreciates that. What next?",
+    cards: [
+      {
+        id: 'breath-journal',
+        emoji: '📝',
+        title: 'Capture this moment',
+        description: 'Write one thing you\'re grateful for right now.',
+        ctaLabel: 'Open gratitude journal',
+        ctaAction: 'gratitude',
+        bg: '#EDE9FE', border: '#C4B5FD', btnColor: '#8B5CF6',
+      },
+      {
+        id: 'breath-body',
+        emoji: '🌿',
+        title: 'Notice your body',
+        description: 'A 3-minute body scan to complete the regulation cycle.',
+        ctaLabel: 'Start body scan',
+        ctaAction: 'bodyscan',
+        bg: '#EDE9FE', border: '#C4B5FD', btnColor: '#8B5CF6',
+      },
+    ],
+  },
+  gratitude: {
+    intro: "Gratitude shifts the mind toward abundance. Keep the momentum.",
+    cards: [
+      {
+        id: 'grat-affirm',
+        emoji: '✨',
+        title: 'Set an affirmation',
+        description: 'Turn your gratitude into a powerful personal affirmation.',
+        ctaLabel: 'Open affirmations',
+        ctaAction: 'affirmations',
+        bg: '#EDE9FE', border: '#C4B5FD', btnColor: '#8B5CF6',
+      },
+      {
+        id: 'grat-surround',
+        emoji: '👀',
+        title: 'Two-minute focus reset',
+        description: 'Look around — what in your surroundings can hold your attention for 2 minutes?',
+        bg: '#EDE9FE', border: '#C4B5FD', btnColor: '#8B5CF6',
+      },
+    ],
+  },
+  tool: {
+    intro: "Great work completing that. Would any of these help you go deeper?",
+    cards: [
+      {
+        id: 'tool-zer',
+        emoji: '📍',
+        title: 'Check your ZER zone',
+        description: 'Notice where you are emotionally after this activity.',
+        ctaLabel: 'Open ZER check-in',
+        ctaAction: 'zer',
+        bg: '#EDE9FE', border: '#C4B5FD', btnColor: '#8B5CF6',
+      },
+      {
+        id: 'tool-breath',
+        emoji: '🌬️',
+        title: 'Breath loop',
+        description: 'A quick breathing cycle to anchor the work you just did.',
+        ctaLabel: 'Start breathing',
+        ctaAction: 'breath',
+        bg: '#EDE9FE', border: '#C4B5FD', btnColor: '#8B5CF6',
+      },
+    ],
+  },
+};
+
+export function ConversationalChat({ oracleName, userName, completedActivity }: ConversationalChatProps) {
   const [isListening, setIsListening] = useState(false); // Start as false, user clicks to start
   const [textValue, setTextValue] = useState('');
   const [messages, setMessages] = useState<MessageType[]>([
@@ -74,6 +203,20 @@ export function ConversationalChat({ oracleName, userName }: ConversationalChatP
   const [showBurnoutAnalytics, setShowBurnoutAnalytics] = useState(false);
   const [showGamesHub, setShowGamesHub] = useState(false);
   const [activeGame, setActiveGame] = useState<string | null>(null);
+  const [activeTool, setActiveTool] = useState<string | null>(null);
+  const [cardFeedback, setCardFeedback] = useState<Record<number, 'up' | 'down'>>({});
+  const handleTabChange = (tab: typeof activeTab) => { setActiveTool(null); setActiveTab(tab); };
+
+  // Inject contextual follow-up cards when returning from a completed activity
+  useEffect(() => {
+    if (!completedActivity) return;
+    const set = CONTEXTUAL_SETS[completedActivity];
+    if (!set) return;
+    setMessages(prev => [
+      ...prev,
+      { type: 'contextual-actions', intro: set.intro, cards: set.cards } as MessageType,
+    ]);
+  }, [completedActivity]);
 
   // Points tracking context
   const { detectIntentFromText, addActivity, streakMultiplier } = usePoints();
@@ -191,7 +334,7 @@ export function ConversationalChat({ oracleName, userName }: ConversationalChatP
             { type: 'oracle', text: "That's great! Now let me help you track your wellness journey." }
           ]);
           
-          // Show ZOW prompt after acknowledgement
+          // Show ZER prompt after acknowledgement
           setTimeout(() => {
             setMessages(prev => [...prev, { type: 'zow-prompt' }]);
           }, 1000);
@@ -231,11 +374,20 @@ export function ConversationalChat({ oracleName, userName }: ConversationalChatP
     setIsListening(true); // Re-enable voice listening when returning to chat
     
     // Mark the action card as completed
-    setMessages(prev => prev.map(msg => 
+    setMessages(prev => prev.map(msg =>
       msg.type === 'action-card' && msg.activity === activity
         ? { ...msg, completed: true }
         : msg
     ));
+
+    // Inject contextual follow-up cards based on completed activity
+    const setKey = activity === 'breathing' ? 'breathing' : activity === 'gratitude' ? 'gratitude' : 'tool';
+    const cSet = CONTEXTUAL_SETS[setKey];
+    if (cSet) {
+      setTimeout(() => {
+        setMessages(prev => [...prev, { type: 'contextual-actions', intro: cSet.intro, cards: cSet.cards } as MessageType]);
+      }, 800);
+    }
     
     // Show insight reel first
     setTimeout(() => {
@@ -505,54 +657,79 @@ export function ConversationalChat({ oracleName, userName }: ConversationalChatP
                 msg.completed ? (
                   // Completed state - shown as user response card with muted gradient
                   <div className="flex gap-2 justify-end">
-                    <div 
+                    <div
                       className="px-5 py-4 rounded-3xl max-w-sm"
-                      style={{ 
-                        background: 'linear-gradient(135deg, #EBF8FF 0%, #DBEAFE 100%)',
-                        border: '2px solid #93C5FD'
+                      style={{
+                        background: 'linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%)',
+                        border: '1.5px solid rgba(139,92,246,0.25)'
                       }}
                     >
                       <div className="flex items-center gap-2 mb-2">
-                        <Wind className="w-5 h-5" style={{ color: '#1E40AF' }} />
-                        <p 
+                        <Wind className="w-5 h-5" style={{ color: '#6D28D9' }} />
+                        <p
                           className="text-sm"
-                          style={{ 
+                          style={{
                             fontFamily: 'Lora, serif',
                             fontWeight: 500,
-                            color: '#1E40AF'
+                            color: '#15113C'
                           }}
                         >
                           {msg.title}
                         </p>
                       </div>
-                      <div 
-                        className="inline-block px-3 py-1.5 rounded-full"
-                        style={{
-                          background: '#3B82F6',
-                          color: 'white',
-                          fontFamily: 'Inter, sans-serif',
-                          fontSize: '11px',
-                          fontWeight: 600,
-                          letterSpacing: '0.05em'
-                        }}
-                      >
-                        ✓ COMPLETED
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="inline-block px-3 py-1.5 rounded-full"
+                          style={{
+                            background: '#8B5CF6',
+                            color: 'white',
+                            fontFamily: 'Inter, sans-serif',
+                            fontSize: '11px',
+                            fontWeight: 600,
+                            letterSpacing: '0.05em'
+                          }}
+                        >
+                          ✓ COMPLETED
+                        </div>
+                        {/* Thumbs up / down feedback */}
+                        <button
+                          onClick={() => setCardFeedback(prev => ({ ...prev, [msgIndex]: prev[i] === 'up' ? undefined as any : 'up' }))}
+                          className="w-7 h-7 rounded-full flex items-center justify-center transition-all"
+                          style={{
+                            background: cardFeedback[i] === 'up' ? '#8B5CF6' : 'rgba(139,92,246,0.1)',
+                            border: '1.5px solid rgba(139,92,246,0.3)',
+                          }}
+                          title="This helped"
+                        >
+                          <span style={{ fontSize: '13px', lineHeight: 1 }}>👍</span>
+                        </button>
+                        <button
+                          onClick={() => setCardFeedback(prev => ({ ...prev, [msgIndex]: prev[i] === 'down' ? undefined as any : 'down' }))}
+                          className="w-7 h-7 rounded-full flex items-center justify-center transition-all"
+                          style={{
+                            background: cardFeedback[i] === 'down' ? '#EF444422' : 'rgba(239,68,68,0.08)',
+                            border: '1.5px solid rgba(239,68,68,0.25)',
+                          }}
+                          title="This didn't help"
+                        >
+                          <span style={{ fontSize: '13px', lineHeight: 1 }}>👎</span>
+                        </button>
                       </div>
                     </div>
                   </div>
                 ) : (
                   // Pending state - muted gradient action card
-                  <div 
+                  <div
                     className="p-5 rounded-3xl"
-                    style={{ 
-                      background: 'linear-gradient(135deg, #EBF8FF 0%, #DBEAFE 100%)',
-                      border: '2px solid #BFDBFE'
+                    style={{
+                      background: 'linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%)',
+                      border: '1.5px solid rgba(139,92,246,0.25)'
                     }}
                   >
                     <div className="flex items-start gap-3 mb-3">
-                      <div 
+                      <div
                         className="w-10 h-10 rounded-full flex items-center justify-center"
-                        style={{ background: '#3B82F6' }}
+                        style={{ background: '#8B5CF6' }}
                       >
                         <Wind className="w-5 h-5" style={{ color: 'white' }} />
                       </div>
@@ -562,16 +739,16 @@ export function ConversationalChat({ oracleName, userName }: ConversationalChatP
                           style={{ 
                             fontFamily: 'Lora, serif',
                             fontWeight: 500,
-                            color: '#1E40AF'
+                            color: '#15113C'
                           }}
                         >
                           {msg.title}
                         </h4>
-                        <p 
+                        <p
                           className="text-sm"
-                          style={{ 
+                          style={{
                             fontFamily: 'Inter, sans-serif',
-                            color: '#1E3A8A'
+                            color: '#6D28D9'
                           }}
                         >
                           {msg.description}
@@ -581,8 +758,8 @@ export function ConversationalChat({ oracleName, userName }: ConversationalChatP
                     <button
                       onClick={() => setActiveActivity(msg.activity)}
                       className="w-full py-3 rounded-full"
-                      style={{ 
-                        background: '#3B82F6',
+                      style={{
+                        background: '#8B5CF6',
                         color: 'white',
                         fontFamily: 'Inter, sans-serif',
                         fontWeight: 600,
@@ -651,34 +828,34 @@ export function ConversationalChat({ oracleName, userName }: ConversationalChatP
                 <div 
                   className="p-4 rounded-3xl"
                   style={{
-                    background: 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)',
-                    border: '2px solid #FCD34D'
+                    background: 'linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%)',
+                    border: '1.5px solid rgba(139,92,246,0.25)'
                   }}
                 >
                   <div className="flex items-start gap-3">
-                    <div 
+                    <div
                       className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
-                      style={{ background: '#F59E0B' }}
+                      style={{ background: '#8B5CF6' }}
                     >
-                      <span className="text-white text-sm">💡</span>
+                      <Lightbulb className="w-4 h-4" style={{ color: 'white' }} />
                     </div>
                     <div className="flex-1">
-                      <p 
+                      <p
                         className="text-xs mb-1"
-                        style={{ 
+                        style={{
                           fontFamily: 'Inter, sans-serif',
-                          color: '#92400E',
+                          color: '#6D28D9',
                           fontWeight: 600,
                           letterSpacing: '0.05em'
                         }}
                       >
                         DID YOU KNOW?
                       </p>
-                      <p 
+                      <p
                         className="text-sm leading-relaxed"
-                        style={{ 
+                        style={{
                           fontFamily: 'Inter, sans-serif',
-                          color: '#78350F'
+                          color: '#4C1D95'
                         }}
                       >
                         {msg.fact}
@@ -796,40 +973,97 @@ export function ConversationalChat({ oracleName, userName }: ConversationalChatP
                 </div>
               )}
 
+              {msg.type === 'contextual-actions' && (
+                <div className="px-1 py-2">
+                  {/* Oracle intro line */}
+                  <p
+                    className="text-center text-sm mb-4 px-2"
+                    style={{ fontFamily: 'Lora, serif', fontWeight: 500, color: '#15113C', lineHeight: 1.6 }}
+                  >
+                    {msg.intro}
+                  </p>
+                  {/* Micro-cards */}
+                  <div className="space-y-2">
+                    {msg.cards.map(card => (
+                      <div
+                        key={card.id}
+                        className="p-4 rounded-3xl"
+                        style={{ background: card.bg, border: `2px solid ${card.border}` }}
+                      >
+                        <div className="flex items-start gap-3">
+                          <span className="text-2xl flex-shrink-0 mt-0.5">{card.emoji}</span>
+                          <div className="flex-1 min-w-0">
+                            <p
+                              className="text-sm mb-1"
+                              style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600, color: '#15113C' }}
+                            >
+                              {card.title}
+                            </p>
+                            <p
+                              className="text-xs mb-3"
+                              style={{ fontFamily: 'Inter, sans-serif', color: '#6B7280', lineHeight: 1.55 }}
+                            >
+                              {card.description}
+                            </p>
+                            {card.ctaLabel && card.ctaAction && (
+                              <button
+                                onClick={() => {
+                                  setActiveTool(card.ctaAction!);
+                                  setActiveTab('tools');
+                                }}
+                                className="w-full py-2.5 rounded-2xl text-sm transition-all active:scale-95"
+                                style={{
+                                  background: card.btnColor,
+                                  color: 'white',
+                                  fontFamily: 'Inter, sans-serif',
+                                  fontWeight: 600,
+                                }}
+                              >
+                                {card.ctaLabel}
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {msg.type === 'zow-prompt' && (
                 <div 
                   className="p-5 rounded-3xl"
-                  style={{ 
-                    background: 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)', 
-                    border: '2px solid #FBBF24'
+                  style={{
+                    background: 'linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%)',
+                    border: '1.5px solid rgba(139,92,246,0.25)'
                   }}
                 >
                   <div className="flex items-start gap-3 mb-3">
-                    <div 
+                    <div
                       className="w-10 h-10 rounded-full flex items-center justify-center"
-                      style={{ background: '#F59E0B' }}
+                      style={{ background: '#8B5CF6' }}
                     >
                       <Heart className="w-5 h-5" style={{ color: 'white' }} />
                     </div>
                     <div className="flex-1">
-                      <h4 
+                      <h4
                         className="text-base mb-1"
-                        style={{ 
+                        style={{
                           fontFamily: 'Lora, serif',
                           fontWeight: 500,
-                          color: '#78350F'
+                          color: '#15113C'
                         }}
                       >
                         Check Your Wellness Zone
                       </h4>
-                      <p 
+                      <p
                         className="text-sm"
-                        style={{ 
+                        style={{
                           fontFamily: 'Inter, sans-serif',
-                          color: '#92400E'
+                          color: '#6D28D9'
                         }}
                       >
-                        ZOW helps track your emotional baseline and progress over time. This important check-in only takes 1 minute.
+                        ZER helps track your emotional baseline and progress over time. This important check-in only takes 1 minute.
                       </p>
                     </div>
                   </div>
@@ -837,23 +1071,24 @@ export function ConversationalChat({ oracleName, userName }: ConversationalChatP
                     onClick={() => setActiveActivity('zow')}
                     className="w-full py-3 rounded-full"
                     style={{ 
-                      background: '#F59E0B',
+                      background: '#8B5CF6',
                       color: 'white',
                       fontFamily: 'Inter, sans-serif',
                       fontWeight: 600,
                       fontSize: '14px'
                     }}
                   >
-                    Complete ZOW Check-in
+                    Complete ZER Check-in
                   </button>
                 </div>
               )}
             </div>
           ))}
 
+
           {isTyping && (
             <div className="flex gap-2">
-              <div 
+              <div
                 className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center"
                 style={{ background: 'linear-gradient(135deg, #DDD6FE 0%, #C4B5FD 100%)' }}
               >
@@ -955,7 +1190,7 @@ export function ConversationalChat({ oracleName, userName }: ConversationalChatP
       )}
 
       {/* Bottom Navigation */}
-      <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+      <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
     </div>
   );
 
@@ -979,7 +1214,7 @@ export function ConversationalChat({ oracleName, userName }: ConversationalChatP
     );
   }
 
-  // Render ZOW screen
+  // Render ZER screen
   if (activeActivity === 'zow') {
     return (
       <ZOWScreen 
@@ -1009,7 +1244,7 @@ export function ConversationalChat({ oracleName, userName }: ConversationalChatP
     return (
       <>
         <EnhancedHomeScreen userName={userName} oracleName={oracleName} />
-        <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+        <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
       </>
     );
   }
@@ -1052,7 +1287,7 @@ export function ConversationalChat({ oracleName, userName }: ConversationalChatP
           <BurnoutAnalytics />
           <BottomNav activeTab={activeTab} onTabChange={(tab) => {
             setShowBurnoutAnalytics(false);
-            setActiveTab(tab);
+            handleTabChange(tab);
           }} />
         </div>
       );
@@ -1061,7 +1296,7 @@ export function ConversationalChat({ oracleName, userName }: ConversationalChatP
     return (
       <>
         <InsightsScreen onViewBurnoutAnalytics={() => setShowBurnoutAnalytics(true)} />
-        <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+        <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
       </>
     );
   }
@@ -1170,10 +1405,40 @@ export function ConversationalChat({ oracleName, userName }: ConversationalChatP
       );
     }
 
+    // Tool inner screens
+    const closeTool = () => {
+      // Inject contextual follow-up for the completed tool into the chat tab
+      const toolKey = activeTool === 'breath' ? 'breathing'
+        : activeTool === 'gratitude' ? 'gratitude'
+        : activeTool === 'zer' ? 'zer'
+        : 'tool';
+      const cSet = CONTEXTUAL_SETS[toolKey];
+      if (cSet) {
+        setMessages(prev => [...prev, { type: 'contextual-actions', intro: cSet.intro, cards: cSet.cards } as MessageType]);
+      }
+      setActiveTool(null);
+    };
+    if (activeTool === "breath") return <BreathLoopsScreen onDone={closeTool} />;
+    if (activeTool === "disidentification") return <DisidentificationScreen onDone={closeTool} />;
+    if (activeTool === "imagery") return <GuidedImageryScreen onDone={closeTool} />;
+    if (activeTool === "gratitude") return <GratitudeJournalScreen onDone={closeTool} />;
+    if (activeTool === "will") return <WillTrainingScreen onDone={closeTool} />;
+    if (activeTool === "ritual") return <RitualBuilderScreen onDone={closeTool} />;
+    if (activeTool === "subpersonality") return <SubpersonalityWorkScreen onDone={closeTool} />;
+    if (activeTool === "bodyscan") return <BodyScanScreen onDone={closeTool} />;
+    if (activeTool === "zer") return <ZERScreen onDone={closeTool} />;
+    if (activeTool === "affirmations") return <AffirmationsScreen onDone={closeTool} />;
+    if (activeTool === "grounding") return <CrisisGroundingScreen onDone={closeTool} />;
+    if (activeTool === "sleep") return <SleepRitualScreen onDone={closeTool} />;
+    if (activeTool === "crisis") return <CrisisGroundingScreen onDone={closeTool} />;
+
     return (
       <>
-        <ToolsScreen onNavigateToGames={() => setShowGamesHub(true)} />
-        <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+        <ToolsScreen
+          onNavigateToGames={() => setShowGamesHub(true)}
+          onSelectTool={(toolId) => setActiveTool(toolId)}
+        />
+        <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
       </>
     );
   }
@@ -1182,7 +1447,7 @@ export function ConversationalChat({ oracleName, userName }: ConversationalChatP
     return (
       <>
         <ProfileScreen userName={userName} oracleName={oracleName} />
-        <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+        <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
       </>
     );
   }

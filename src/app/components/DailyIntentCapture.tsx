@@ -31,7 +31,7 @@ export function DailyIntentCapture({ userName, onComplete }: DailyIntentCaptureP
       title: 'Daily Ritual',
       subtitle: 'Regulate Your Day',
       color: '#F59E0B',
-      bgColor: '#FEF3C7',
+      bgColor: '#EDE9FE',
       cards: [
         { text: 'Be more productive', imageUrl: 'https://images.unsplash.com/photo-1598978483528-fd57466ab0ad?w=400', color: '#F59E0B' },
         { text: 'Build better habits', imageUrl: 'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=400', color: '#F59E0B' },
@@ -48,16 +48,16 @@ export function DailyIntentCapture({ userName, onComplete }: DailyIntentCaptureP
       title: 'Personal Development',
       subtitle: 'Strengthen Your Self',
       color: '#3B82F6',
-      bgColor: '#DBEAFE',
+      bgColor: '#EDE9FE',
       cards: [
-        { text: 'Build confidence', imageUrl: 'https://images.unsplash.com/photo-1515191107209-c28698631303?w=400', color: '#3B82F6' },
+        { text: 'Build confidence', imageUrl: 'https://images.unsplash.com/photo-1552581234-26160f608093?w=400', color: '#3B82F6' },
         { text: 'Make better decisions', imageUrl: 'https://images.unsplash.com/photo-1507608616759-54f48f0af0ee?w=400', color: '#3B82F6' },
-        { text: 'Develop self-awareness', imageUrl: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=400', color: '#3B82F6' },
-        { text: 'Work on shadow aspects', imageUrl: 'https://images.unsplash.com/photo-1502139214982-d0ad755818d8?w=400', color: '#3B82F6' },
+        { text: 'Develop self-awareness', imageUrl: 'https://images.unsplash.com/photo-1499728603263-13726abce5fd?w=400', color: '#3B82F6' },
+        { text: 'Work on my Shadows', imageUrl: 'https://images.unsplash.com/photo-1502139214982-d0ad755818d8?w=400', color: '#3B82F6' },
         { text: 'Strengthen willpower', imageUrl: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=400', color: '#3B82F6' },
-        { text: 'Set boundaries', imageUrl: 'https://images.unsplash.com/photo-1483086431886-3590a88317fe?w=400', color: '#3B82F6' },
-        { text: 'Overcome fears', imageUrl: 'https://images.unsplash.com/photo-1519834785169-98be25ec3f84?w=400', color: '#3B82F6' },
-        { text: 'Growth mindset', imageUrl: 'https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=400', color: '#3B82F6' }
+        { text: 'Set healthy boundaries', imageUrl: 'https://images.unsplash.com/photo-1483086431886-3590a88317fe?w=400', color: '#3B82F6' },
+        { text: 'Overcome anxiety', imageUrl: 'https://images.unsplash.com/photo-1519834785169-98be25ec3f84?w=400', color: '#3B82F6' },
+        { text: 'Develop growth mindset', imageUrl: 'https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=400', color: '#3B82F6' }
       ]
     },
     {
@@ -65,13 +65,13 @@ export function DailyIntentCapture({ userName, onComplete }: DailyIntentCaptureP
       title: 'Spiritual Development',
       subtitle: 'Connect to Your Center',
       color: '#10B981',
-      bgColor: '#D1FAE5',
+      bgColor: '#EDE9FE',
       cards: [
         { text: 'Find inner peace', imageUrl: 'https://images.unsplash.com/photo-1522075782449-e45a34f1ddfb?w=400', color: '#10B981' },
         { text: 'Experience more love', imageUrl: 'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?w=400', color: '#10B981' },
-        { text: 'Reduce anxiety', imageUrl: 'https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=400', color: '#10B981' },
+        { text: 'Heal from a personal loss - Grieve', imageUrl: 'https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=400', color: '#10B981' },
         { text: 'Deepen spiritual practice', imageUrl: 'https://images.unsplash.com/photo-1528715471579-d1bcf0ba5e83?w=400', color: '#10B981' },
-        { text: 'Gain deeper insights', imageUrl: 'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=400', color: '#10B981' },
+        { text: 'Gain deeper self insights', imageUrl: 'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=400', color: '#10B981' },
         { text: 'Practice gratitude', imageUrl: 'https://images.unsplash.com/photo-1502139214982-d0ad755818d8?w=400', color: '#10B981' },
         { text: 'Connect with nature', imageUrl: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400', color: '#10B981' },
         { text: 'Mindful presence', imageUrl: 'https://images.unsplash.com/photo-1533162507191-d90c625b2640?w=400', color: '#10B981' }
@@ -203,7 +203,7 @@ export function DailyIntentCapture({ userName, onComplete }: DailyIntentCaptureP
                   letterSpacing: '0.1em'
                 }}
               >
-                Suggestions
+                Designing Intentions
               </p>
               <h3
                 className="text-xl mb-1"

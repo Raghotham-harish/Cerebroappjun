@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Calendar, Filter } from "lucide-react";
+import { Calendar, Filter, ArrowLeft } from "lucide-react";
 
 interface HistoryEntry {
   date: string;
@@ -86,11 +86,11 @@ export function ZOWHistory({ onBack }: ZOWHistoryProps) {
   const filteredData = getFilteredData();
 
   const getColorForScore = (score: number): string => {
-    if (score >= 6) return '#10B981';
-    if (score >= 4) return '#34D399';
-    if (score >= 3) return '#FBBF24';
-    if (score >= 2) return '#FB923C';
-    return '#F87171';
+    if (score === 7) return '#F97316';
+    if (score === 6) return '#F59E0B';
+    if (score >= 3)  return '#10B981';
+    if (score === 2) return '#FBBF24';
+    return '#F97316';
   };
 
 
@@ -100,14 +100,9 @@ export function ZOWHistory({ onBack }: ZOWHistoryProps) {
       <div className="flex-shrink-0 px-4 py-4 flex items-center justify-between border-b" style={{ borderColor: '#E5E7EB' }}>
         <button
           onClick={onBack}
-          className="text-base"
-          style={{
-            fontFamily: 'Inter, sans-serif',
-            color: '#8B5CF6',
-            fontWeight: 600
-          }}
+          className="cb-btn-icon"
         >
-          ← Back
+          <ArrowLeft className="w-5 h-5" style={{ color: "#15113C" }} />
         </button>
         <h2
           className="text-xl"
@@ -117,7 +112,7 @@ export function ZOWHistory({ onBack }: ZOWHistoryProps) {
             color: '#15113C'
           }}
         >
-          ZOW Details
+          ZER Details
         </h2>
         <div className="w-16" />
       </div>
@@ -140,7 +135,7 @@ export function ZOWHistory({ onBack }: ZOWHistoryProps) {
                 fontStyle: 'italic'
               }}
             >
-              💡 Each dot represents a wellness check-in, colored by your wellness zone. Tap on any dot to see details.
+              💡 Each dot represents a ZER check-in, coloured by your arousal zone. Tap on any dot to see details.
             </p>
           </div>
 
@@ -193,10 +188,10 @@ export function ZOWHistory({ onBack }: ZOWHistoryProps) {
               className="w-full"
               style={{ maxHeight: '400px' }}
             >
-              {/* Background horizontal wellness zones - LOW at bottom, HIGH at top */}
-              <rect x={40} y={333.33} width={560} height={146.67} fill="#FEE2E2" opacity="0.3" />
-              <rect x={40} y={186.67} width={560} height={146.66} fill="#FEF3C7" opacity="0.3" />
-              <rect x={40} y={40} width={560} height={146.67} fill="#D1FAE5" opacity="0.3" />
+              {/* Zone bands: hypo(bottom/orange) → regulates(mid/green) → hyper(top/yellow) */}
+              <rect x={40} y={333.33} width={560} height={146.67} fill="#FED7AA" opacity="0.35" />
+              <rect x={40} y={186.67} width={560} height={146.66} fill="#D1FAE5" opacity="0.35" />
+              <rect x={40} y={40}     width={560} height={146.67} fill="#FEF3C7" opacity="0.35" />
 
               {/* Horizontal wellness zone dividers */}
               <line x1={40} y1={333.33} x2={600} y2={333.33} stroke="#9CA3AF" strokeWidth="1" strokeDasharray="4,4" opacity="0.3" />
@@ -208,14 +203,14 @@ export function ZOWHistory({ onBack }: ZOWHistoryProps) {
               ))}
 
               {/* Y-axis wellness labels on left */}
-              <text x={15} y={406.67} textAnchor="middle" fontSize="9" fill="#6B7280" fontFamily="Inter, sans-serif" transform="rotate(-90, 15, 406.67)">
-                LOW (1-2)
+              <text x={15} y={406.67} textAnchor="middle" fontSize="9" fill="#F97316" fontFamily="Inter, sans-serif" transform="rotate(-90, 15, 406.67)">
+                HYPO (1-2)
               </text>
-              <text x={15} y={260} textAnchor="middle" fontSize="9" fill="#6B7280" fontFamily="Inter, sans-serif" transform="rotate(-90, 15, 260)">
-                MODERATE (3-5)
+              <text x={15} y={260} textAnchor="middle" fontSize="9" fill="#10B981" fontFamily="Inter, sans-serif" transform="rotate(-90, 15, 260)">
+                REGULATES (3-5)
               </text>
-              <text x={15} y={113.33} textAnchor="middle" fontSize="9" fill="#6B7280" fontFamily="Inter, sans-serif" transform="rotate(-90, 15, 113.33)">
-                HIGH (6-7)
+              <text x={15} y={113.33} textAnchor="middle" fontSize="9" fill="#F97316" fontFamily="Inter, sans-serif" transform="rotate(-90, 15, 113.33)">
+                HYPER (6-7)
               </text>
 
               {/* X-axis time label at bottom */}
@@ -376,10 +371,18 @@ export function ZOWHistory({ onBack }: ZOWHistoryProps) {
               </div>
               <div className="text-center">
                 <p className="text-xl mb-0.5" style={{ fontFamily: 'Lora, serif', fontWeight: 600, color: '#15113C' }}>
-                  {filteredData.length > 0 ? (filteredData.reduce((sum, e) => sum + e.score, 0) / filteredData.length).toFixed(1) : '0.0'}
+                  {(() => {
+                    if (filteredData.length === 0) return '0.0';
+                    const sorted = [...filteredData].sort((a, b) => a.score - b.score);
+                    const mid = Math.floor(sorted.length / 2);
+                    return (sorted.length % 2 !== 0
+                      ? sorted[mid].score
+                      : (sorted[mid - 1].score + sorted[mid].score) / 2
+                    ).toFixed(1);
+                  })()}
                 </p>
                 <p className="text-xs" style={{ fontFamily: 'Inter, sans-serif', color: '#6B7280' }}>
-                  Average
+                  Median
                 </p>
               </div>
               <div className="text-center">

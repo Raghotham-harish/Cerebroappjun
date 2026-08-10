@@ -32,7 +32,7 @@ export function BoxBreathingScreen() {
     <div 
       className="min-h-screen relative overflow-hidden flex flex-col"
       style={{ 
-        background: 'linear-gradient(180deg, #E0F2FE 0%, #DBEAFE 100%)',
+        background: 'linear-gradient(180deg, #EDE9FE 0%, #F5F3FF 100%)',
         padding: '16px'
       }}
     >

@@ -103,7 +103,7 @@ export function CrisisSupportScreen() {
                 color: '#A1A1AA'
               }}
             >
-              ZOW dropped: 72 → 4
+              ZER dropped: 72 → 4
             </p>
           </div>
         </div>

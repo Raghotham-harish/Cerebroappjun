@@ -8,11 +8,11 @@ interface ProfileScreenProps {
 
 export function ProfileScreen({ userName, oracleName }: ProfileScreenProps) {
   const menuItems = [
-    { icon: User, label: "Account Settings", color: "#8B5CF6" },
-    { icon: Bell, label: "Notifications", color: "#06B6D4" },
-    { icon: Shield, label: "Privacy & Security", color: "#10B981" },
-    { icon: Settings, label: "App Preferences", color: "#F59E0B" },
-    { icon: HelpCircle, label: "Help & Support", color: "#6366F1" },
+    { icon: User,       label: "Account Settings",   iconBg: "#EDE9FE" },
+    { icon: Bell,       label: "Notifications",      iconBg: "#CFFAFE" },
+    { icon: Shield,     label: "Privacy & Security", iconBg: "#DCFCE7" },
+    { icon: Settings,   label: "App Preferences",    iconBg: "#FEF3C7" },
+    { icon: HelpCircle, label: "Help & Support",     iconBg: "#DBEAFE" },
   ];
 
   return (
@@ -164,11 +164,11 @@ export function ProfileScreen({ userName, oracleName }: ProfileScreenProps) {
               border: '2px solid #F3F4F6'
             }}
           >
-            <div 
+            <div
               className="w-10 h-10 rounded-full flex items-center justify-center"
-              style={{ background: `${item.color}20` }}
+              style={{ background: item.iconBg }}
             >
-              <item.icon className="w-5 h-5" style={{ color: item.color }} />
+              <item.icon className="w-5 h-5" style={{ color: '#15113C' }} />
             </div>
             <span 
               className="flex-1 text-left text-sm"
@@ -189,8 +189,8 @@ export function ProfileScreen({ userName, oracleName }: ProfileScreenProps) {
       <button
         className="w-full mt-6 p-4 rounded-2xl flex items-center justify-center gap-2"
         style={{
-          background: 'linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%)',
-          border: '2px solid #FCA5A5'
+          background: 'rgba(255,255,255,0.8)',
+          border: '1.5px solid rgba(220,38,38,0.2)'
         }}
       >
         <LogOut className="w-5 h-5" style={{ color: '#DC2626' }} />

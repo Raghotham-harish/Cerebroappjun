@@ -41,6 +41,7 @@ function AppContent() {
   });
   const [lifeSatisfactionScores, setLifeSatisfactionScores] = useState<number[]>([]);
   const [micPermissionGranted, setMicPermissionGranted] = useState(false);
+  const [completedActivity, setCompletedActivity] = useState<'zer' | 'breathing' | 'gratitude' | 'tool' | null>(null);
 
   const { addIntent, intents, pillarProgress, totalPoints, currentStreak, updateStreak } = usePoints();
 
@@ -108,7 +109,8 @@ function AppContent() {
     setAppState("zow");
   };
 
-  const handleZOWComplete = () => {
+  const handleZERComplete = () => {
+    setCompletedActivity('zer');
     setAppState("chat");
   };
 
@@ -205,7 +207,7 @@ function AppContent() {
         <LifeSatisfactionScale userName={userInfo.name} onComplete={handleLifeSatisfactionComplete} />
       )}
       {appState === "zow" && (
-        <ZOWScreen userName={userInfo.name} onComplete={handleZOWComplete} />
+        <ZOWScreen userName={userInfo.name} userIntents={intents.map(i => i.intent)} onComplete={handleZERComplete} />
       )}
       {appState === "home" && (
         <HomeScreen userName={userInfo.name} onStartChat={handleStartChat} />
@@ -215,6 +217,7 @@ function AppContent() {
           oracleName={oracleConfig.name}
           userName={userInfo.name}
           onClose={handleCloseChat}
+          completedActivity={completedActivity}
         />
       )}
       {appState === "burnoutAssessment" && (

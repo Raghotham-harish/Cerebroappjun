@@ -376,17 +376,7 @@ export function BurnoutResult({ onContinue, onViewAnalytics, onBookCoach }: Burn
                 </div>
               </div>
 
-              <button
-                onClick={onBookCoach}
-                className="w-full py-2 rounded-2xl"
-                style={{
-                  background: 'linear-gradient(135deg, #A78BFA 0%, #8B5CF6 100%)',
-                  color: 'white',
-                  fontFamily: 'Inter, sans-serif',
-                  fontWeight: 600,
-                  fontSize: '14px'
-                }}
-              >
+              <button onClick={onBookCoach} className="cb-btn-primary" style={{ fontSize: '14px' }}>
                 Book a Session
               </button>
             </div>

@@ -171,7 +171,7 @@ export function RuleSwitchGame({ onClose, onComplete }: RuleSwitchGameProps) {
 
   if (gameState === "finished") {
     return (
-      <div className="fixed inset-0 z-50 flex flex-col" style={{ background: 'linear-gradient(135deg, #FDE68A 0%, #FEF3C7 100%)' }}>
+      <div className="fixed inset-0 z-50 flex flex-col" style={{ background: 'linear-gradient(180deg, #EDE9FE 0%, #F5F3FF 100%)' }}>
         <div className="flex items-center justify-between p-4 border-b" style={{ borderColor: 'rgba(229, 231, 235, 0.5)' }}>
           <button onClick={onClose} className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.9)', border: '2px solid #E5E7EB' }}>
             <X className="w-5 h-5" style={{ color: '#6B7280' }} />
@@ -246,7 +246,7 @@ export function RuleSwitchGame({ onClose, onComplete }: RuleSwitchGameProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col" style={{ background: 'linear-gradient(135deg, #FDE68A 0%, #FEF3C7 100%)' }}>
+    <div className="fixed inset-0 z-50 flex flex-col" style={{ background: 'linear-gradient(180deg, #EDE9FE 0%, #F5F3FF 100%)' }}>
       <div className="flex items-center justify-between p-4 border-b" style={{ borderColor: 'rgba(229, 231, 235, 0.5)' }}>
         <button onClick={onClose} className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.9)', border: '2px solid #E5E7EB' }}>
           <X className="w-5 h-5" style={{ color: '#6B7280' }} />

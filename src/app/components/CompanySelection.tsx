@@ -1,12 +1,12 @@
-import { useState } from "react";
-import { Search, Building2, Plus, Check } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Search, Building2, Plus, Check, X } from "lucide-react";
 import { AnimatedLogo } from "./AnimatedLogo";
 
 interface Company {
   id: string;
   name: string;
   industry?: string;
-  onboarded: boolean;
+  domain: string;
 }
 
 interface CompanySelectionProps {
@@ -14,78 +14,62 @@ interface CompanySelectionProps {
   onComplete: (companyName: string, companyEmail: string, companyId?: string) => void;
 }
 
+const onboardedCompanies: Company[] = [
+  { id: "1",  name: "Google",             industry: "Technology",    domain: "google.com" },
+  { id: "2",  name: "Microsoft",          industry: "Technology",    domain: "microsoft.com" },
+  { id: "3",  name: "Apple Inc.",         industry: "Technology",    domain: "apple.com" },
+  { id: "4",  name: "Amazon",             industry: "E-commerce",    domain: "amazon.com" },
+  { id: "5",  name: "Meta Platforms",     industry: "Technology",    domain: "meta.com" },
+  { id: "6",  name: "Tesla",              industry: "Automotive",    domain: "tesla.com" },
+  { id: "7",  name: "Netflix",            industry: "Entertainment", domain: "netflix.com" },
+  { id: "8",  name: "Goldman Sachs",      industry: "Finance",       domain: "gs.com" },
+  { id: "9",  name: "McKinsey & Company", industry: "Consulting",    domain: "mckinsey.com" },
+  { id: "10", name: "Deloitte",           industry: "Consulting",    domain: "deloitte.com" },
+];
+
 export function CompanySelection({ userName, onComplete }: CompanySelectionProps) {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
-  const [isManualEntry, setIsManualEntry] = useState(false);
-  const [manualCompanyName, setManualCompanyName] = useState("");
-  const [companyEmail, setCompanyEmail] = useState("");
-  const [emailError, setEmailError] = useState("");
-
-  // Mock data - admin-onboarded companies
-  const onboardedCompanies: Company[] = [
-    { id: "1", name: "Google", industry: "Technology", onboarded: true },
-    { id: "2", name: "Microsoft", industry: "Technology", onboarded: true },
-    { id: "3", name: "Apple Inc.", industry: "Technology", onboarded: true },
-    { id: "4", name: "Amazon", industry: "E-commerce", onboarded: true },
-    { id: "5", name: "Meta Platforms", industry: "Technology", onboarded: true },
-    { id: "6", name: "Tesla", industry: "Automotive", onboarded: true },
-    { id: "7", name: "Netflix", industry: "Entertainment", onboarded: true },
-    { id: "8", name: "Goldman Sachs", industry: "Finance", onboarded: true },
-    { id: "9", name: "McKinsey & Company", industry: "Consulting", onboarded: true },
-    { id: "10", name: "Deloitte", industry: "Consulting", onboarded: true },
-  ];
-
-  // Get expected email domain for a company
-  const getCompanyDomain = (companyName: string): string => {
-    const domainMap: Record<string, string> = {
-      "Google": "google.com",
-      "Microsoft": "microsoft.com",
-      "Apple Inc.": "apple.com",
-      "Amazon": "amazon.com",
-      "Meta Platforms": "meta.com",
-      "Tesla": "tesla.com",
-      "Netflix": "netflix.com",
-      "Goldman Sachs": "gs.com",
-      "McKinsey & Company": "mckinsey.com",
-      "Deloitte": "deloitte.com",
-    };
-    return domainMap[companyName] || "";
-  };
-
-  // Validate email domain matches company
-  const validateEmailDomain = (email: string, companyName: string): boolean => {
-    if (!email || !companyName) return false;
-
-    const expectedDomain = getCompanyDomain(companyName);
-
-    // For manually entered companies, skip domain validation
-    if (!expectedDomain && isManualEntry) return true;
-
-    // For onboarded companies, validate domain
-    if (expectedDomain) {
-      const emailDomain = email.split("@")[1]?.toLowerCase();
-      return emailDomain === expectedDomain;
-    }
-
-    return true;
-  };
+  const [searchQuery, setSearchQuery]               = useState("");
+  const [selectedCompany, setSelectedCompany]       = useState<Company | null>(null);
+  const [isManualEntry, setIsManualEntry]           = useState(false);
+  const [manualCompanyName, setManualCompanyName]   = useState("");
+  // For known companies: just the local part (before @)
+  const [emailLocal, setEmailLocal]                 = useState("");
+  // For manual companies: full email
+  const [manualEmail, setManualEmail]               = useState("");
+  const [emailError, setEmailError]                 = useState("");
 
   const filteredCompanies = searchQuery
-    ? onboardedCompanies.filter(company =>
-        company.name.toLowerCase().includes(searchQuery.toLowerCase())
+    ? onboardedCompanies.filter(c =>
+        c.name.toLowerCase().includes(searchQuery.toLowerCase())
       )
     : [];
+
+  // When search has text but no matches → auto-enter manual mode with query pre-filled
+  useEffect(() => {
+    if (searchQuery && filteredCompanies.length === 0 && !selectedCompany) {
+      setIsManualEntry(true);
+      setManualCompanyName(searchQuery);
+    } else if (filteredCompanies.length > 0) {
+      // Results came back — exit auto-manual mode if nothing confirmed yet
+      if (isManualEntry && !manualCompanyName) {
+        setIsManualEntry(false);
+      }
+    }
+  }, [searchQuery, filteredCompanies.length]);
 
   const handleSelectCompany = (company: Company) => {
     setSelectedCompany(company);
     setIsManualEntry(false);
     setManualCompanyName("");
+    setEmailLocal("");
     setEmailError("");
-    // Re-validate existing email if any
-    if (companyEmail) {
-      handleEmailChange(companyEmail, company.name);
-    }
+    setSearchQuery("");
+  };
+
+  const handleClearSelection = () => {
+    setSelectedCompany(null);
+    setEmailLocal("");
+    setEmailError("");
   };
 
   const handleManualEntry = () => {
@@ -94,55 +78,30 @@ export function CompanySelection({ userName, onComplete }: CompanySelectionProps
     setEmailError("");
   };
 
-  const handleEmailChange = (email: string, companyName?: string) => {
-    setCompanyEmail(email);
-    setEmailError("");
-
-    if (email && email.includes("@")) {
-      const currentCompanyName = companyName || selectedCompany?.name || manualCompanyName.trim();
-      if (currentCompanyName) {
-        const expectedDomain = getCompanyDomain(currentCompanyName);
-        if (expectedDomain) {
-          const emailDomain = email.split("@")[1]?.toLowerCase();
-          if (emailDomain && emailDomain !== expectedDomain) {
-            setEmailError(`Email must be from ${expectedDomain}`);
-          }
-        }
-      }
-    }
-  };
-
   const handleContinue = () => {
-    const currentCompanyName = isManualEntry ? manualCompanyName.trim() : selectedCompany?.name || "";
-
-    if (!currentCompanyName || !companyEmail.trim()) return;
-
-    // Validate email domain before continuing
-    if (!validateEmailDomain(companyEmail, currentCompanyName)) {
-      const expectedDomain = getCompanyDomain(currentCompanyName);
-      setEmailError(`Email must be from ${expectedDomain}`);
-      return;
-    }
-
-    if (isManualEntry) {
-      onComplete(currentCompanyName, companyEmail.trim());
-    } else if (selectedCompany) {
-      onComplete(selectedCompany.name, companyEmail.trim(), selectedCompany.id);
+    if (selectedCompany) {
+      if (!emailLocal.trim()) return;
+      const fullEmail = `${emailLocal.trim()}@${selectedCompany.domain}`;
+      onComplete(selectedCompany.name, fullEmail, selectedCompany.id);
+    } else if (isManualEntry && manualCompanyName.trim()) {
+      if (!manualEmail.trim() || !manualEmail.includes("@")) {
+        setEmailError("Please enter a valid email address");
+        return;
+      }
+      onComplete(manualCompanyName.trim(), manualEmail.trim());
     }
   };
 
-  const canContinue = ((isManualEntry && manualCompanyName.trim()) || selectedCompany) &&
-                      companyEmail.trim() &&
-                      !emailError;
+  const canContinue = selectedCompany
+    ? emailLocal.trim().length > 0
+    : isManualEntry && manualCompanyName.trim().length > 0 && manualEmail.trim().includes("@") && !emailError;
 
   return (
     <div
       className="h-screen flex flex-col overflow-hidden"
-      style={{
-        background: 'linear-gradient(135deg, #FAF5FF 0%, #EDE9FE 50%, #EBF8FF 100%)'
-      }}
+      style={{ background: "linear-gradient(135deg, #FAF5FF 0%, #EDE9FE 50%, #EBF8FF 100%)" }}
     >
-      {/* Logo Header */}
+      {/* Logo */}
       <div className="pt-8 pb-4 flex justify-center px-4">
         <AnimatedLogo size={48} animate={false} />
       </div>
@@ -150,289 +109,198 @@ export function CompanySelection({ userName, onComplete }: CompanySelectionProps
       <div className="flex-1 flex flex-col min-h-0">
         <div className="flex-1 overflow-y-auto px-4">
           <div className="max-w-2xl mx-auto py-6">
+
             {/* Header */}
             <div className="mb-8 text-center">
-              <h2
-                className="text-2xl mb-2"
-                style={{
-                  fontFamily: 'Lora, serif',
-                  fontWeight: 500,
-                  color: '#15113C'
-                }}
-              >
+              <h2 className="text-2xl mb-2" style={{ fontFamily: "Lora, serif", fontWeight: 500, color: "#15113C" }}>
                 Welcome, {userName}
               </h2>
-              <p
-                className="text-base"
-                style={{
-                  fontFamily: 'Inter, sans-serif',
-                  color: '#6B7280'
-                }}
-              >
-                Which company are you associated with?
+              <p className="text-base" style={{ fontFamily: "Inter, sans-serif", color: "#6B7280" }}>
+                Which organisation are you associated with?
               </p>
             </div>
 
-            {/* Search Bar */}
-            <div className="mb-6">
-              <div className="relative">
-                <Search
-                  className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5"
-                  style={{ color: '#9CA3AF' }}
-                />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search for your company..."
-                  className="w-full pl-12 pr-4 py-4 rounded-2xl border-2 outline-none transition-all"
-                  style={{
-                    fontFamily: 'Inter, sans-serif',
-                    fontSize: '16px',
-                    borderColor: searchQuery ? '#8B5CF6' : '#E5E7EB',
-                    background: 'white'
-                  }}
-                />
-              </div>
-            </div>
-
-            {/* Search Results */}
-            {searchQuery && filteredCompanies.length > 0 && (
+            {/* Selected company pill */}
+            {selectedCompany && (
               <div
-                className="mb-6 rounded-2xl overflow-hidden"
-                style={{
-                  background: 'white',
-                  border: '2px solid #E5E7EB',
-                  maxHeight: '300px',
-                  overflowY: 'auto'
-                }}
+                className="flex items-center gap-3 p-4 rounded-2xl mb-6"
+                style={{ background: "#F3E8FF", border: "2px solid #A78BFA" }}
               >
-                {filteredCompanies.map((company) => (
-                  <button
-                    key={company.id}
-                    onClick={() => handleSelectCompany(company)}
-                    className="w-full p-4 text-left transition-all border-b hover:bg-purple-50"
-                    style={{
-                      borderColor: '#F3F4F6',
-                      background: selectedCompany?.id === company.id ? '#F3E8FF' : 'white'
-                    }}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div
-                          className="w-10 h-10 rounded-full flex items-center justify-center"
-                          style={{ background: '#EDE9FE' }}
-                        >
-                          <Building2 className="w-5 h-5" style={{ color: '#8B5CF6' }} />
-                        </div>
-                        <div>
-                          <p
-                            className="text-base mb-1"
-                            style={{
-                              fontFamily: 'Inter, sans-serif',
-                              fontWeight: 600,
-                              color: '#15113C'
-                            }}
-                          >
-                            {company.name}
-                          </p>
-                          {company.industry && (
-                            <p
-                              className="text-sm"
-                              style={{
-                                fontFamily: 'Inter, sans-serif',
-                                color: '#9CA3AF'
-                              }}
-                            >
-                              {company.industry}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                      {selectedCompany?.id === company.id && (
-                        <Check className="w-5 h-5" style={{ color: '#8B5CF6' }} />
-                      )}
-                    </div>
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {/* No Results */}
-            {searchQuery && filteredCompanies.length === 0 && (
-              <div
-                className="mb-6 p-6 rounded-2xl text-center"
-                style={{
-                  background: 'white',
-                  border: '2px solid #E5E7EB'
-                }}
-              >
-                <p
-                  className="text-base mb-2"
-                  style={{
-                    fontFamily: 'Inter, sans-serif',
-                    color: '#6B7280'
-                  }}
-                >
-                  No companies found matching "{searchQuery}"
-                </p>
-                <p
-                  className="text-sm"
-                  style={{
-                    fontFamily: 'Inter, sans-serif',
-                    color: '#9CA3AF'
-                  }}
-                >
-                  You can add it manually below
-                </p>
-              </div>
-            )}
-
-            {/* Manual Entry Option */}
-            <div className="mb-6">
-              <div className="flex items-center justify-center mb-4">
-                <div className="flex-1 h-px" style={{ background: '#E5E7EB' }} />
-                <span
-                  className="px-4 text-sm"
-                  style={{
-                    fontFamily: 'Inter, sans-serif',
-                    color: '#9CA3AF'
-                  }}
-                >
-                  OR
-                </span>
-                <div className="flex-1 h-px" style={{ background: '#E5E7EB' }} />
-              </div>
-
-              {!isManualEntry ? (
-                <button
-                  onClick={handleManualEntry}
-                  className="w-full p-4 rounded-2xl border-2 border-dashed transition-all flex items-center justify-center gap-2"
-                  style={{
-                    borderColor: '#C4B5FD',
-                    background: 'rgba(237, 233, 254, 0.3)'
-                  }}
-                >
-                  <Plus className="w-5 h-5" style={{ color: '#8B5CF6' }} />
-                  <span
-                    className="text-base"
-                    style={{
-                      fontFamily: 'Inter, sans-serif',
-                      fontWeight: 600,
-                      color: '#8B5CF6'
-                    }}
-                  >
-                    Add Company Manually
-                  </span>
+                <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "#EDE9FE" }}>
+                  <Building2 className="w-5 h-5" style={{ color: "#8B5CF6" }} />
+                </div>
+                <div className="flex-1">
+                  <p className="text-base" style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, color: "#15113C" }}>
+                    {selectedCompany.name}
+                  </p>
+                  <p className="text-xs" style={{ fontFamily: "Inter, sans-serif", color: "#8B5CF6" }}>
+                    {selectedCompany.industry}
+                  </p>
+                </div>
+                <Check className="w-5 h-5 flex-shrink-0" style={{ color: "#8B5CF6" }} />
+                <button onClick={handleClearSelection} className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: "rgba(139,92,246,0.15)" }}>
+                  <X className="w-3 h-3" style={{ color: "#8B5CF6" }} />
                 </button>
-              ) : (
+              </div>
+            )}
+
+            {/* Search (hidden once company selected) */}
+            {!selectedCompany && (
+              <>
+                <div className="mb-4">
+                  <div className="relative">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: "#9CA3AF" }} />
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => {
+                        setSearchQuery(e.target.value);
+                        if (!e.target.value) { setIsManualEntry(false); setManualCompanyName(""); }
+                      }}
+                      placeholder="Search for your organisation..."
+                      className="w-full pl-12 pr-4 py-4 rounded-2xl border-2 outline-none transition-all"
+                      style={{
+                        fontFamily: "Inter, sans-serif",
+                        fontSize: "16px",
+                        borderColor: searchQuery ? "#8B5CF6" : "#E5E7EB",
+                        background: "white",
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Results dropdown */}
+                {searchQuery && filteredCompanies.length > 0 && (
+                  <div className="mb-4 rounded-2xl overflow-hidden" style={{ background: "white", border: "2px solid #E5E7EB" }}>
+                    {filteredCompanies.map((company) => (
+                      <button
+                        key={company.id}
+                        onClick={() => handleSelectCompany(company)}
+                        className="w-full p-4 text-left border-b transition-all hover:bg-purple-50"
+                        style={{ borderColor: "#F3F4F6" }}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "#EDE9FE" }}>
+                            <Building2 className="w-5 h-5" style={{ color: "#8B5CF6" }} />
+                          </div>
+                          <div>
+                            <p className="text-base" style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, color: "#15113C" }}>
+                              {company.name}
+                            </p>
+                            <p className="text-xs" style={{ fontFamily: "Inter, sans-serif", color: "#9CA3AF" }}>
+                              {company.industry} · {company.domain}
+                            </p>
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* Auto manual entry — no results found */}
+                {isManualEntry && (
+                  <div className="mb-4 p-5 rounded-2xl" style={{ background: "white", border: "2px solid #8B5CF6" }}>
+                    <div className="flex items-center gap-2 mb-3">
+                      <Plus className="w-4 h-4" style={{ color: "#8B5CF6" }} />
+                      <p className="text-sm" style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, color: "#8B5CF6" }}>
+                        Not found — add your organisation
+                      </p>
+                    </div>
+                    <label className="block text-xs mb-1.5" style={{ fontFamily: "Inter, sans-serif", color: "#6B7280", fontWeight: 600 }}>
+                      Organisation Name
+                    </label>
+                    <input
+                      type="text"
+                      value={manualCompanyName}
+                      onChange={(e) => setManualCompanyName(e.target.value)}
+                      placeholder="Enter organisation name..."
+                      className="w-full px-4 py-3 rounded-xl border-2 outline-none transition-all"
+                      style={{ fontFamily: "Inter, sans-serif", fontSize: "15px", borderColor: "#E5E7EB", background: "#F9FAFB" }}
+                      autoFocus
+                    />
+                  </div>
+                )}
+
+                {/* Manual add button — shown when no search query */}
+                {!searchQuery && !isManualEntry && (
+                  <>
+                    <div className="flex items-center justify-center mb-4">
+                      <div className="flex-1 h-px" style={{ background: "#E5E7EB" }} />
+                      <span className="px-4 text-sm" style={{ fontFamily: "Inter, sans-serif", color: "#9CA3AF" }}>OR</span>
+                      <div className="flex-1 h-px" style={{ background: "#E5E7EB" }} />
+                    </div>
+                    <button
+                      onClick={handleManualEntry}
+                      className="w-full p-4 rounded-2xl border-2 border-dashed flex items-center justify-center gap-2 transition-all"
+                      style={{ borderColor: "#C4B5FD", background: "rgba(237,233,254,0.3)" }}
+                    >
+                      <Plus className="w-5 h-5" style={{ color: "#8B5CF6" }} />
+                      <span className="text-base" style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, color: "#8B5CF6" }}>
+                        Add Organisation Manually
+                      </span>
+                    </button>
+                  </>
+                )}
+              </>
+            )}
+
+            {/* ── Email section ── */}
+
+            {/* Known company: split input — local part only, domain locked */}
+            {selectedCompany && (
+              <div className="p-5 rounded-2xl mb-6" style={{ background: "white", border: "2px solid #E5E7EB" }}>
+                <label className="block text-sm mb-2" style={{ fontFamily: "Inter, sans-serif", color: "#6B7280", fontWeight: 600 }}>
+                  Work Email Address
+                </label>
                 <div
-                  className="p-6 rounded-2xl"
-                  style={{
-                    background: 'white',
-                    border: '2px solid #8B5CF6'
-                  }}
+                  className="flex items-center rounded-xl overflow-hidden border-2 transition-all"
+                  style={{ borderColor: emailLocal ? "#8B5CF6" : "#E5E7EB" }}
                 >
-                  <label
-                    className="block text-sm mb-2"
-                    style={{
-                      fontFamily: 'Inter, sans-serif',
-                      color: '#6B7280',
-                      fontWeight: 600
-                    }}
-                  >
-                    Company Name
-                  </label>
                   <input
                     type="text"
-                    value={manualCompanyName}
-                    onChange={(e) => setManualCompanyName(e.target.value)}
-                    placeholder="Enter your company name..."
-                    className="w-full px-4 py-3 rounded-xl border-2 outline-none transition-all"
-                    style={{
-                      fontFamily: 'Inter, sans-serif',
-                      fontSize: '16px',
-                      borderColor: '#E5E7EB',
-                      background: '#F9FAFB'
-                    }}
-                    autoFocus
+                    value={emailLocal}
+                    onChange={(e) => setEmailLocal(e.target.value.replace(/@.*/, ""))}
+                    placeholder="yourname"
+                    className="flex-1 px-4 py-3 outline-none"
+                    style={{ fontFamily: "Inter, sans-serif", fontSize: "15px", background: "#F9FAFB", color: "#15113C" }}
                   />
-                  <button
-                    onClick={() => {
-                      setIsManualEntry(false);
-                      setManualCompanyName("");
-                    }}
-                    className="mt-3 text-sm"
-                    style={{
-                      fontFamily: 'Inter, sans-serif',
-                      color: '#8B5CF6',
-                      fontWeight: 600
-                    }}
+                  <div
+                    className="px-4 py-3 flex-shrink-0"
+                    style={{ background: "#EDE9FE", borderLeft: "2px solid #C4B5FD" }}
                   >
-                    Cancel
-                  </button>
+                    <span className="text-sm" style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, color: "#8B5CF6" }}>
+                      @{selectedCompany.domain}
+                    </span>
+                  </div>
                 </div>
-              )}
-            </div>
+                <p className="text-xs mt-2" style={{ fontFamily: "Inter, sans-serif", color: "#9CA3AF" }}>
+                  Enter the part before @ — domain is pre-filled for {selectedCompany.name}
+                </p>
+              </div>
+            )}
 
-            {/* Company Email Input */}
-            {(selectedCompany || (isManualEntry && manualCompanyName.trim())) && (
-              <div
-                className="p-6 rounded-2xl mb-6"
-                style={{
-                  background: 'white',
-                  border: `2px solid ${emailError ? '#EF4444' : '#E5E7EB'}`
-                }}
-              >
-                <label
-                  className="block text-sm mb-2"
-                  style={{
-                    fontFamily: 'Inter, sans-serif',
-                    color: '#6B7280',
-                    fontWeight: 600
-                  }}
-                >
-                  Company Email Address
+            {/* Manual company: full email */}
+            {isManualEntry && manualCompanyName.trim() && (
+              <div className="p-5 rounded-2xl mb-6" style={{ background: "white", border: `2px solid ${emailError ? "#EF4444" : "#E5E7EB"}` }}>
+                <label className="block text-sm mb-2" style={{ fontFamily: "Inter, sans-serif", color: "#6B7280", fontWeight: 600 }}>
+                  Work Email Address
                 </label>
                 <input
                   type="email"
-                  value={companyEmail}
-                  onChange={(e) => handleEmailChange(e.target.value)}
-                  placeholder={
-                    selectedCompany
-                      ? `you@${getCompanyDomain(selectedCompany.name) || 'company.com'}`
-                      : "you@company.com"
-                  }
+                  value={manualEmail}
+                  onChange={(e) => { setManualEmail(e.target.value); setEmailError(""); }}
+                  placeholder="you@yourcompany.com"
                   className="w-full px-4 py-3 rounded-xl border-2 outline-none transition-all"
                   style={{
-                    fontFamily: 'Inter, sans-serif',
-                    fontSize: '16px',
-                    borderColor: emailError ? '#EF4444' : (companyEmail && !emailError ? '#10B981' : '#E5E7EB'),
-                    background: '#F9FAFB'
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: "15px",
+                    borderColor: emailError ? "#EF4444" : manualEmail.includes("@") ? "#10B981" : "#E5E7EB",
+                    background: "#F9FAFB",
                   }}
                 />
-                {emailError ? (
-                  <p
-                    className="text-xs mt-2"
-                    style={{
-                      fontFamily: 'Inter, sans-serif',
-                      color: '#EF4444',
-                      fontWeight: 600
-                    }}
-                  >
+                {emailError && (
+                  <p className="text-xs mt-2" style={{ fontFamily: "Inter, sans-serif", color: "#EF4444", fontWeight: 600 }}>
                     {emailError}
-                  </p>
-                ) : (
-                  <p
-                    className="text-xs mt-2"
-                    style={{
-                      fontFamily: 'Inter, sans-serif',
-                      color: '#9CA3AF'
-                    }}
-                  >
-                    {selectedCompany
-                      ? `Use your ${getCompanyDomain(selectedCompany.name)} email address`
-                      : "Add your work email to verify company association"}
                   </p>
                 )}
               </div>
@@ -442,12 +310,12 @@ export function CompanySelection({ userName, onComplete }: CompanySelectionProps
           </div>
         </div>
 
-        {/* Sticky Continue Button */}
+        {/* Sticky Continue */}
         <div
           className="flex-shrink-0 px-4 py-4"
           style={{
-            background: 'linear-gradient(180deg, rgba(250, 245, 255, 0.8) 0%, rgba(250, 245, 255, 1) 100%)',
-            borderTop: '1px solid rgba(229, 231, 235, 0.3)'
+            background: "linear-gradient(180deg, rgba(250,245,255,0.8) 0%, rgba(250,245,255,1) 100%)",
+            borderTop: "1px solid rgba(229,231,235,0.3)",
           }}
         >
           <div className="max-w-2xl mx-auto">
@@ -456,14 +324,12 @@ export function CompanySelection({ userName, onComplete }: CompanySelectionProps
               disabled={!canContinue}
               className="w-full py-4 rounded-full transition-all disabled:opacity-40"
               style={{
-                background: canContinue
-                  ? 'linear-gradient(135deg, #A78BFA 0%, #8B5CF6 100%)'
-                  : '#E5E7EB',
-                color: 'white',
-                fontFamily: 'Inter, sans-serif',
+                background: canContinue ? "linear-gradient(135deg, #A78BFA 0%, #8B5CF6 100%)" : "#E5E7EB",
+                color: "white",
+                fontFamily: "Inter, sans-serif",
                 fontWeight: 600,
-                fontSize: '16px',
-                border: canContinue ? 'none' : '2px solid #D1D5DB'
+                fontSize: "16px",
+                border: canContinue ? "none" : "2px solid #D1D5DB",
               }}
             >
               Continue

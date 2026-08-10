@@ -624,9 +624,9 @@ export function CoachBooking({ onBack, onComplete }: CoachBookingProps) {
             {/* Success Icon */}
             <div
               className="w-20 h-20 rounded-full flex items-center justify-center mb-4"
-              style={{ background: '#D1FAE5' }}
+              style={{ background: '#EDE9FE' }}
             >
-              <Check className="w-10 h-10" style={{ color: '#059669' }} />
+              <Check className="w-10 h-10" style={{ color: '#8B5CF6' }} />
             </div>
 
             <h2

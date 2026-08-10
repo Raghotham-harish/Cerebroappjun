@@ -77,7 +77,7 @@ export function VoiceChatScreen({ oracleName, userName }: VoiceChatScreenProps) 
   const [speakerEnabled, setSpeakerEnabled] = useState(true);
   const [isTyping, setIsTyping] = useState(false);
   const [showActionItems, setShowActionItems] = useState(true); // Show by default
-  const [showZOWOverlay, setShowZOWOverlay] = useState(false); // ZOW overlay state
+  const [showZEROverlay, setShowZEROverlay] = useState(false); // ZER overlay state
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -177,7 +177,7 @@ export function VoiceChatScreen({ oracleName, userName }: VoiceChatScreenProps) 
         className="relative flex flex-col items-center justify-center border-b"
         style={{ 
           height: '30vh',
-          background: 'linear-gradient(135deg, #FAF5FF 0%, #FCE7F3 50%, #EBF8FF 100%)',
+          background: 'linear-gradient(135deg, #FAF5FF 0%, #EDE9FE 50%, #F5F3FF 100%)',
           borderColor: '#F3F4F6'
         }}
       >
@@ -282,34 +282,34 @@ export function VoiceChatScreen({ oracleName, userName }: VoiceChatScreenProps) 
           >
             <div className="flex items-center gap-3 pb-2" style={{ minWidth: 'max-content' }}>
               <button
-                onClick={() => setShowZOWOverlay(true)}
-                className="px-5 py-3 rounded-2xl text-sm flex items-center gap-2.5 whitespace-nowrap flex-shrink-0 transition-all hover:opacity-90"
+                onClick={() => setShowZEROverlay(true)}
+                className="px-5 py-3 rounded-full text-sm flex items-center gap-2.5 whitespace-nowrap flex-shrink-0 transition-all hover:opacity-90"
                 style={{
-                  background: 'linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%)',
-                  color: '#065F46',
+                  background: 'linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%)',
+                  color: '#5B21B6',
                   fontFamily: 'Inter, sans-serif',
                   fontWeight: 500,
-                  border: '2px solid #10B981'
+                  border: '1.5px solid rgba(139,92,246,0.3)'
                 }}
               >
                 <Heart className="w-4 h-4" />
-                Zone of Wellness Check
+                ZER Check-in
               </button>
               <button
-                className="px-5 py-3 rounded-2xl text-sm flex items-center gap-2.5 whitespace-nowrap flex-shrink-0 transition-all hover:opacity-90"
+                className="px-5 py-3 rounded-full text-sm flex items-center gap-2.5 whitespace-nowrap flex-shrink-0 transition-all hover:opacity-90"
                 style={{
-                  background: 'linear-gradient(135deg, #FED7AA 0%, #FDE68A 100%)',
-                  color: '#78350F',
+                  background: 'rgba(255,255,255,0.85)',
+                  color: '#5B21B6',
                   fontFamily: 'Inter, sans-serif',
                   fontWeight: 500,
-                  border: '2px solid #F59E0B'
+                  border: '1.5px solid rgba(139,92,246,0.2)'
                 }}
               >
                 <BookOpen className="w-4 h-4" />
                 Complete Daily Reflection
               </button>
               <button
-                className="px-5 py-3 rounded-2xl text-sm flex items-center gap-2.5 whitespace-nowrap flex-shrink-0 transition-all hover:opacity-90"
+                className="px-5 py-3 rounded-full text-sm flex items-center gap-2.5 whitespace-nowrap flex-shrink-0 transition-all hover:opacity-90"
                 style={{
                   background: 'linear-gradient(135deg, #DDD6FE 0%, #C4B5FD 100%)',
                   color: '#5B21B6',
@@ -649,7 +649,7 @@ export function VoiceChatScreen({ oracleName, userName }: VoiceChatScreenProps) 
             className="text-base mb-12 text-center" 
             style={{ fontFamily: 'Inter, sans-serif', color: '#6B7280' }}
           >
-            Your personal oracle: {oracleName}
+            Your Personal Oracle: {oracleName}
           </p>
 
           <div className="w-full max-w-md space-y-3">
@@ -714,13 +714,13 @@ export function VoiceChatScreen({ oracleName, userName }: VoiceChatScreenProps) 
   
   if (activeTab === "profile") return renderProfileView();
   
-  // Show ZOW overlay if active
-  if (showZOWOverlay) {
+  // Show ZER overlay if active
+  if (showZEROverlay) {
     return (
       <div className="relative">
         <ZOWScreen 
           userName={userName} 
-          onComplete={() => setShowZOWOverlay(false)} 
+          onComplete={() => setShowZEROverlay(false)} 
         />
       </div>
     );
