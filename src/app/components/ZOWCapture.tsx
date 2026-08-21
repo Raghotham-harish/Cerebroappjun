@@ -199,7 +199,7 @@ export function ZOWCapture({ userName, onComplete }: ZOWCaptureProps) {
                   { label: 'Hypo',  sub: '(1-2)', color: '#F97316' },
                   { label: '',      sub: '',       color: 'transparent' },
                 ].map((item, i) => (
-                  <span key={i} className="text-right leading-tight" style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 600, width: '42px', color: item.color }}>
+                  <span key={i} className="text-right leading-tight" style={{ fontFamily: 'Inter, sans-serif', fontSize: '10px', fontWeight: 600, width: '42px', color: item.color }}>
                     {item.label}
                     {item.sub && <span style={{ display: 'block', fontSize: '8px', fontWeight: 400, color: '#9CA3AF' }}>{item.sub}</span>}
                   </span>

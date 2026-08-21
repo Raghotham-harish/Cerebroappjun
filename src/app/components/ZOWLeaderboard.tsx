@@ -62,7 +62,7 @@ export function ZOWLeaderboard({ currentZER, trigger, onContinue, onViewHistory 
             </h2>
             <p className="text-sm mb-2" style={{ fontFamily: 'Inter, sans-serif', color: '#9CA3AF' }}>7-day journey</p>
             <div className="px-3 py-2 rounded-2xl max-w-lg mx-auto" style={{ background: 'rgba(196,181,253,0.15)', border: '1px solid #C4B5FD' }}>
-              <p className="text-xs leading-snug" style={{ fontFamily: 'Inter, sans-serif', color: '#6B21A8', fontStyle: 'italic' }}>
+              <p className="text-xs leading-snug" style={{ fontFamily: 'Inter, sans-serif', color: '#6B7280', fontStyle: 'italic' }}>
                 💡 Track your emotional baseline and regulation progress over time
               </p>
             </div>
@@ -218,7 +218,7 @@ export function ZOWLeaderboard({ currentZER, trigger, onContinue, onViewHistory 
                 <div key={z.label} className="flex-1 p-2 rounded-xl text-center" style={{ background: 'rgba(255,255,255,0.6)' }}>
                   <div className="w-2 h-2 rounded-full mx-auto mb-1" style={{ background: z.color }} />
                   <p className="text-xs" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600, color: z.color }}>{z.pct}%</p>
-                  <p className="leading-tight" style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', color: '#9CA3AF' }}>{z.label.split(' ')[0]}</p>
+                  <p className="leading-tight" style={{ fontFamily: 'Inter, sans-serif', fontSize: '10px', color: '#9CA3AF' }}>{z.label.split(' ')[0]}</p>
                 </div>
               ))}
             </div>

@@ -170,7 +170,7 @@ export function VoiceChatScreen({ oracleName, userName }: VoiceChatScreenProps) 
   const renderChatView = () => (
     <div 
       className="min-h-screen relative overflow-hidden flex flex-col"
-      style={{ background: 'linear-gradient(180deg, #FEFEFE 0%, #FDFCFC 100%)' }}
+      style={{ background: 'linear-gradient(180deg, #EDE9FE 0%, #F5F3FF 100%)' }}
     >
       {/* Voice Wave Area - 30% */}
       <div 
@@ -211,7 +211,7 @@ export function VoiceChatScreen({ oracleName, userName }: VoiceChatScreenProps) 
         <div className="absolute top-4 right-4 flex gap-2">
           <button
             onClick={() => setSpeakerEnabled(!speakerEnabled)}
-            className="w-9 h-9 rounded-full flex items-center justify-center transition-colors"
+            className="w-11 h-11 rounded-full flex items-center justify-center transition-colors"
             style={{
               background: speakerEnabled ? 'white' : '#F3F4F6',
               border: `2px solid ${speakerEnabled ? '#C4B5FD' : '#E5E7EB'}`
@@ -225,7 +225,7 @@ export function VoiceChatScreen({ oracleName, userName }: VoiceChatScreenProps) 
           </button>
           <button
             onClick={() => setMicEnabled(!micEnabled)}
-            className="w-9 h-9 rounded-full flex items-center justify-center transition-colors"
+            className="w-11 h-11 rounded-full flex items-center justify-center transition-colors"
             style={{
               background: micEnabled ? 'white' : '#F3F4F6',
               border: `2px solid ${micEnabled ? '#C4B5FD' : '#E5E7EB'}`
@@ -251,7 +251,7 @@ export function VoiceChatScreen({ oracleName, userName }: VoiceChatScreenProps) 
               <div 
                 className="w-24 h-24 rounded-full flex items-center justify-center"
                 style={{
-                  background: micEnabled ? '#6366F1' : '#E5E7EB',
+                  background: micEnabled ? '#8B5CF6' : '#E5E7EB',
                   border: micEnabled ? 'none' : '2px solid #D1D5DB'
                 }}
               >
@@ -275,7 +275,7 @@ export function VoiceChatScreen({ oracleName, userName }: VoiceChatScreenProps) 
           <div 
             className="px-4 py-4 border-b overflow-x-auto"
             style={{ 
-              background: 'linear-gradient(180deg, #FEFEFE 0%, #FDFCFC 100%)',
+              background: 'linear-gradient(180deg, #EDE9FE 0%, #F5F3FF 100%)',
               borderColor: '#F3F4F6',
               minHeight: '10vh'
             }}
@@ -286,7 +286,7 @@ export function VoiceChatScreen({ oracleName, userName }: VoiceChatScreenProps) 
                 className="px-5 py-3 rounded-full text-sm flex items-center gap-2.5 whitespace-nowrap flex-shrink-0 transition-all hover:opacity-90"
                 style={{
                   background: 'linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%)',
-                  color: '#5B21B6',
+                  color: '#8B5CF6',
                   fontFamily: 'Inter, sans-serif',
                   fontWeight: 500,
                   border: '1.5px solid rgba(139,92,246,0.3)'
@@ -299,7 +299,7 @@ export function VoiceChatScreen({ oracleName, userName }: VoiceChatScreenProps) 
                 className="px-5 py-3 rounded-full text-sm flex items-center gap-2.5 whitespace-nowrap flex-shrink-0 transition-all hover:opacity-90"
                 style={{
                   background: 'rgba(255,255,255,0.85)',
-                  color: '#5B21B6',
+                  color: '#8B5CF6',
                   fontFamily: 'Inter, sans-serif',
                   fontWeight: 500,
                   border: '1.5px solid rgba(139,92,246,0.2)'
@@ -312,7 +312,7 @@ export function VoiceChatScreen({ oracleName, userName }: VoiceChatScreenProps) 
                 className="px-5 py-3 rounded-full text-sm flex items-center gap-2.5 whitespace-nowrap flex-shrink-0 transition-all hover:opacity-90"
                 style={{
                   background: 'linear-gradient(135deg, #DDD6FE 0%, #C4B5FD 100%)',
-                  color: '#5B21B6',
+                  color: '#8B5CF6',
                   fontFamily: 'Inter, sans-serif',
                   fontWeight: 500,
                   border: '2px solid #8B5CF6'
@@ -538,7 +538,7 @@ export function VoiceChatScreen({ oracleName, userName }: VoiceChatScreenProps) 
               disabled={!textValue.trim()}
               className="w-11 h-11 rounded-full transition-all disabled:opacity-40 flex items-center justify-center"
               style={{ 
-                background: textValue.trim() ? '#6366F1' : '#F3F4F6'
+                background: textValue.trim() ? '#8B5CF6' : '#F3F4F6'
               }}
             >
               <div 
@@ -560,7 +560,7 @@ export function VoiceChatScreen({ oracleName, userName }: VoiceChatScreenProps) 
     <div 
       className="min-h-screen relative overflow-hidden flex flex-col pb-24"
       style={{ 
-        background: 'linear-gradient(135deg, #FFF7ED 0%, #FEF3C7 100%)',
+        background: 'linear-gradient(180deg, #EDE9FE 0%, #F5F3FF 100%)',
         padding: '16px'
       }}
     >
@@ -624,7 +624,7 @@ export function VoiceChatScreen({ oracleName, userName }: VoiceChatScreenProps) 
       <div 
         className="min-h-screen relative overflow-hidden flex flex-col pb-24"
         style={{ 
-          background: 'linear-gradient(135deg, #FAF5FF 0%, #EDE9FE 50%, #EBF8FF 100%)',
+          background: 'linear-gradient(180deg, #EDE9FE 0%, #F5F3FF 100%)',
           padding: '16px'
         }}
       >

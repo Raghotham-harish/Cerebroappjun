@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { ArrowLeft, Check, Wind, Mic, MicOff, ChevronRight } from "lucide-react";
+import { ArrowLeft, Check, Mic, MicOff } from "lucide-react";
 
 function speakText(text: string) {
   if (!("speechSynthesis" in window)) return;
@@ -19,8 +19,12 @@ type Pattern = {
   id: string;
   name: string;
   subtitle: string;
+  benefit: string;
   phases: { label: string; duration: number }[];
-  chipBg: string;
+  cardGradient: string;
+  accentColor: string;
+  ambientColor: string;
+  phaseChipColors: string[];
 };
 
 const patterns: Pattern[] = [
@@ -28,39 +32,50 @@ const patterns: Pattern[] = [
     id: "478",
     name: "4-7-8",
     subtitle: "Calming & sleep-inducing",
+    benefit: "Quiets the nervous system. Best before bed.",
     phases: [
       { label: "Inhale", duration: 4 },
       { label: "Hold", duration: 7 },
       { label: "Exhale", duration: 8 },
     ],
-    chipBg: "#BFDBFE",
+    cardGradient: "linear-gradient(135deg, #DBEAFE 0%, #EDE9FE 100%)",
+    accentColor: "#3B82F6",
+    ambientColor: "rgba(59,130,246,0.15)",
+    phaseChipColors: ["#BFDBFE", "#E0E7FF", "#EDE9FE"],
   },
   {
     id: "box",
     name: "Box Breathing",
     subtitle: "Focus & stress relief",
+    benefit: "Used by Navy SEALs. Regulates breath under pressure.",
     phases: [
       { label: "Inhale", duration: 4 },
       { label: "Hold", duration: 4 },
       { label: "Exhale", duration: 4 },
       { label: "Hold", duration: 4 },
     ],
-    chipBg: "#BBF7D0",
+    cardGradient: "linear-gradient(135deg, #D1FAE5 0%, #DBEAFE 100%)",
+    accentColor: "#059669",
+    ambientColor: "rgba(5,150,105,0.15)",
+    phaseChipColors: ["#BBF7D0", "#A7F3D0", "#BBF7D0", "#A7F3D0"],
   },
   {
     id: "coherence",
     name: "Coherence",
     subtitle: "Heart-rate balance",
+    benefit: "Synchronises heart and breath. Builds emotional regulation.",
     phases: [
       { label: "Inhale", duration: 5 },
       { label: "Exhale", duration: 5 },
     ],
-    chipBg: "#C4B5FD",
+    cardGradient: "linear-gradient(135deg, #FCE7F3 0%, #EDE9FE 100%)",
+    accentColor: "#DB2777",
+    ambientColor: "rgba(219,39,119,0.12)",
+    phaseChipColors: ["#FBCFE8", "#EDE9FE"],
   },
 ];
 
 const PURPLE = "#8B5CF6";
-const PAGE_BG = "linear-gradient(180deg, #EDE9FE 0%, #F5F3FF 100%)";
 const DONE_BG = "linear-gradient(135deg, #EDE9FE 0%, #C4B5FD 100%)";
 
 export function BreathLoopsScreen({ onDone }: BreathLoopsScreenProps) {
@@ -110,6 +125,7 @@ export function BreathLoopsScreen({ onDone }: BreathLoopsScreenProps) {
   const phase = selected?.phases[phaseIdx];
   const progress = phase ? (phase.duration - count) / phase.duration : 0;
   const scale = phase?.label === "Inhale" ? 1 + progress * 0.3 : phase?.label === "Exhale" ? 1.3 - progress * 0.3 : 1.15;
+  const sessionBg = selected ? `linear-gradient(180deg, ${selected.ambientColor.replace("0.15", "0.05")} 0%, #F5F3FF 100%)` : "linear-gradient(180deg, #EDE9FE 0%, #F5F3FF 100%)";
 
   if (completed && selected) {
     return (
@@ -130,7 +146,7 @@ export function BreathLoopsScreen({ onDone }: BreathLoopsScreenProps) {
 
   if (running && selected) {
     return (
-      <div className="min-h-screen flex flex-col" style={{ background: PAGE_BG, padding: "16px" }}>
+      <div className="min-h-screen flex flex-col" style={{ background: sessionBg, padding: "16px" }}>
         <div className="flex items-center justify-between pt-8 pb-4">
           <button onClick={stop} className="cb-btn-icon">
             <ArrowLeft className="w-5 h-5" style={{ color: "#15113C" }} />
@@ -142,9 +158,9 @@ export function BreathLoopsScreen({ onDone }: BreathLoopsScreenProps) {
         </div>
         <div className="flex-1 flex flex-col items-center justify-center">
           <div className="relative flex items-center justify-center mb-10" style={{ width: 220, height: 220 }}>
-            <div className="absolute rounded-full transition-all" style={{ width: 160 * scale, height: 160 * scale, background: "rgba(139,92,246,0.12)", transition: "width 0.8s ease, height 0.8s ease" }} />
-            <div className="absolute rounded-full transition-all" style={{ width: 120 * scale, height: 120 * scale, background: "rgba(139,92,246,0.22)", transition: "width 0.8s ease, height 0.8s ease" }} />
-            <div className="w-20 h-20 rounded-full flex flex-col items-center justify-center" style={{ background: PURPLE, zIndex: 10 }}>
+            <div className="absolute rounded-full transition-all" style={{ width: 160 * scale, height: 160 * scale, background: selected.ambientColor.replace("0.15", "0.1"), transition: "width 0.8s ease, height 0.8s ease" }} />
+            <div className="absolute rounded-full transition-all" style={{ width: 120 * scale, height: 120 * scale, background: selected.ambientColor.replace("0.15", "0.2"), transition: "width 0.8s ease, height 0.8s ease" }} />
+            <div className="w-20 h-20 rounded-full flex flex-col items-center justify-center" style={{ background: selected.accentColor, zIndex: 10 }}>
               <span className="text-2xl" style={{ color: "white", fontFamily: "Inter, sans-serif", fontWeight: 700 }}>{count}</span>
             </div>
           </div>
@@ -159,9 +175,9 @@ export function BreathLoopsScreen({ onDone }: BreathLoopsScreenProps) {
   }
 
   return (
-    <div className="min-h-screen" style={{ background: PAGE_BG, padding: "16px", paddingBottom: "40px" }}>
+    <div className="min-h-screen" style={{ background: "linear-gradient(180deg, #EDE9FE 0%, #F5F3FF 100%)", padding: "16px", paddingBottom: "40px" }}>
       <div className="flex items-center gap-3 pt-8 pb-6">
-        <button onClick={onDone} className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.7)", border: "1.5px solid rgba(0,0,0,0.08)" }}>
+        <button onClick={onDone} className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.7)", border: "1.5px solid rgba(0,0,0,0.08)" }}>
           <ArrowLeft className="w-5 h-5" style={{ color: "#15113C" }} />
         </button>
         <div>
@@ -169,29 +185,48 @@ export function BreathLoopsScreen({ onDone }: BreathLoopsScreenProps) {
           <p className="text-xs" style={{ fontFamily: "Inter, sans-serif", color: "#9CA3AF" }}>Choose a breathing pattern</p>
         </div>
       </div>
+
       <div className="space-y-4 mt-2">
         {patterns.map((p) => (
           <button
             key={p.id}
             onClick={() => startSession(p)}
-            className="w-full p-5 rounded-3xl flex items-center gap-4 text-left transition-all active:scale-95"
-            style={{ background: "rgba(255,255,255,0.8)", border: "1.5px solid rgba(139,92,246,0.15)" }}
+            className="w-full rounded-3xl text-left transition-all active:scale-95 overflow-hidden"
+            style={{ background: p.cardGradient, border: "none", position: "relative" }}
           >
-            <div className="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0" style={{ background: PURPLE }}>
-              <Wind className="w-7 h-7" style={{ color: "white" }} />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-base mb-0.5" style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, color: "#15113C" }}>{p.name}</h3>
-              <p className="text-xs mb-2" style={{ fontFamily: "Inter, sans-serif", color: "#6B7280" }}>{p.subtitle}</p>
+            {/* Ambient circle top-right decoration */}
+            <div
+              className="absolute"
+              style={{
+                width: 120,
+                height: 120,
+                borderRadius: "50%",
+                background: p.ambientColor,
+                top: -30,
+                right: -20,
+              }}
+            />
+            <div className="relative p-5">
+              <div className="flex items-start justify-between mb-3">
+                <div>
+                  <h3 className="text-lg mb-0.5" style={{ fontFamily: "Lora, serif", fontWeight: 500, color: "#15113C" }}>{p.name}</h3>
+                  <p className="text-xs" style={{ fontFamily: "Inter, sans-serif", color: "#6B7280" }}>{p.subtitle}</p>
+                </div>
+                <div className="w-8 h-8 rounded-full flex items-center justify-center mt-0.5" style={{ background: "rgba(255,255,255,0.6)" }}>
+                  <span style={{ fontFamily: "Inter, sans-serif", fontSize: 14, color: p.accentColor }}>→</span>
+                </div>
+              </div>
+              <p className="text-xs mb-3" style={{ fontFamily: "Inter, sans-serif", color: "#374151", lineHeight: 1.5 }}>
+                {p.benefit}
+              </p>
               <div className="flex gap-2 flex-wrap">
                 {p.phases.map((ph, i) => (
-                  <span key={i} className="px-2 py-0.5 rounded-md text-xs" style={{ background: p.chipBg, color: "#15113C", fontWeight: 600 }}>
+                  <span key={i} className="px-2.5 py-1 rounded-full text-xs" style={{ background: "rgba(255,255,255,0.65)", color: "#15113C", fontFamily: "Inter, sans-serif", fontWeight: 600 }}>
                     {ph.label} {ph.duration}s
                   </span>
                 ))}
               </div>
             </div>
-            <ChevronRight className="w-5 h-5" style={{ color: PURPLE }} />
           </button>
         ))}
       </div>

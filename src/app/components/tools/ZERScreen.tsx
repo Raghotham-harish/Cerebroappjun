@@ -348,7 +348,7 @@ export function ZERScreen({ onDone }: ZERScreenProps) {
             <span
               key={i}
               className="text-right leading-tight"
-              style={{ fontFamily: "Inter, sans-serif", fontSize: "9px", fontWeight: 600, width: "40px", color: item.color }}
+              style={{ fontFamily: "Inter, sans-serif", fontSize: "10px", fontWeight: 600, width: "40px", color: item.color }}
             >
               {item.label}
               {item.sub && (

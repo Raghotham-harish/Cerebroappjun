@@ -191,7 +191,7 @@ export function LifeSatisfactionScale({ userName, onComplete }: LifeSatisfaction
           }}
         >
           {speakerEnabled ? (
-            <Volume2 className="w-5 h-5" style={{ color: '#6366F1' }} />
+            <Volume2 className="w-5 h-5" style={{ color: '#8B5CF6' }} />
           ) : (
             <VolumeX className="w-5 h-5" style={{ color: '#9CA3AF' }} />
           )}
@@ -206,7 +206,7 @@ export function LifeSatisfactionScale({ userName, onComplete }: LifeSatisfaction
           }}
         >
           {micEnabled ? (
-            <Mic className="w-5 h-5" style={{ color: '#6366F1' }} />
+            <Mic className="w-5 h-5" style={{ color: '#8B5CF6' }} />
           ) : (
             <MicOff className="w-5 h-5" style={{ color: '#9CA3AF' }} />
           )}
@@ -337,7 +337,7 @@ export function LifeSatisfactionScale({ userName, onComplete }: LifeSatisfaction
                 className="text-base"
                 style={{ 
                   fontFamily: 'Inter, sans-serif',
-                  color: '#6366F1',
+                  color: '#8B5CF6',
                   fontWeight: 500
                 }}
               >

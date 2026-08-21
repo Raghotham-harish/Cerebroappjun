@@ -1,10 +1,35 @@
-import { ArrowRight, Plus, TrendingUp, Heart, Target, User, AlertCircle, Smile, Zap, Shield, Activity } from "lucide-react";
+import { ArrowRight, Plus, TrendingUp, Heart, Target, User, AlertCircle, Smile, Zap, Shield, Activity, Bell } from "lucide-react";
 
 interface InsightsScreenProps {
   onViewBurnoutAnalytics?: () => void;
+  onOpenNotifications?: () => void;
+  notifUnreadCount?: number;
 }
 
-export function InsightsScreen({ onViewBurnoutAnalytics }: InsightsScreenProps = {}) {
+function BellButton({ count = 0, onClick }: { count?: number; onClick?: () => void }) {
+  return (
+    <div className="relative">
+      <button
+        onClick={onClick}
+        className="w-11 h-11 rounded-2xl flex items-center justify-center transition-all active:scale-90"
+        style={{ background: "rgba(255,255,255,0.85)", border: "1.5px solid rgba(139,92,246,0.18)" }}
+        aria-label="Notifications"
+      >
+        <Bell className="w-5 h-5" style={{ color: "#15113C", strokeWidth: 1.75 }} />
+      </button>
+      {count > 0 && (
+        <div
+          className="absolute -top-1 -right-1 flex items-center justify-center rounded-full"
+          style={{ minWidth: 17, height: 17, background: "#8B5CF6", fontFamily: "Inter", fontWeight: 700, fontSize: "9px", color: "white", paddingLeft: 3, paddingRight: 3 }}
+        >
+          {count}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function InsightsScreen({ onViewBurnoutAnalytics, onOpenNotifications, notifUnreadCount = 0 }: InsightsScreenProps = {}) {
   const emotionData = [
     { day: 'M', anxiety: 20, guilt: 15, joy: 30, calm: 35 },
     { day: 'T', anxiety: 25, guilt: 10, joy: 25, calm: 40 },
@@ -18,7 +43,7 @@ export function InsightsScreen({ onViewBurnoutAnalytics }: InsightsScreenProps =
   const healingStages = [
     { name: "Coping", description: "Self-care & safety", status: "complete", color: "#10B981" },
     { name: "Recognition", description: "Awakening & awareness", status: "complete", color: "#10B981" },
-    { name: "Acceptance", description: "Releasing patterns", status: "current", color: "#F87171" },
+    { name: "Acceptance", description: "Releasing patterns", status: "current", color: "#8B5CF6" },
     { name: "Transformation", description: "Parts integration", status: "locked", color: "#E5E7EB" },
     { name: "Integration", description: "Embodying new patterns", status: "locked", color: "#E5E7EB" }
   ];
@@ -31,40 +56,36 @@ export function InsightsScreen({ onViewBurnoutAnalytics }: InsightsScreenProps =
   ];
 
   const goals = [
-    { name: "Manage workplace anxiety", description: "Track + Reframe", progress: 62, color: "#6366F1" },
-    { name: "Rebuild morning routine", description: "Habit + Anchor", progress: 40, color: "#06B6D4" }
+    { name: "Manage workplace anxiety", description: "Track + Reframe", progress: 62, color: "#8B5CF6" },
+    { name: "Rebuild morning routine", description: "Habit + Anchor", progress: 40, color: "#8B5CF6" }
   ];
 
   return (
     <div 
       className="min-h-screen pb-32"
       style={{ 
-        background: 'linear-gradient(180deg, #FAF9F7 0%, #FFFFFF 100%)',
+        background: 'linear-gradient(180deg, #EDE9FE 0%, #F5F3FF 100%)',
         padding: '16px',
         paddingBottom: '128px'
       }}
     >
       {/* Header */}
-      <div className="pt-8 pb-6 px-2">
-        <h1 
-          className="text-3xl mb-1"
-          style={{ 
-            fontFamily: 'Lora, serif',
-            fontWeight: 500,
-            color: '#15113C'
-          }}
-        >
-          Insights
-        </h1>
-        <p 
-          className="text-sm"
-          style={{ 
-            fontFamily: 'Inter, sans-serif',
-            color: '#9CA3AF'
-          }}
-        >
-          March · Personal · Private
-        </p>
+      <div className="flex items-start justify-between pt-8 pb-6 px-2">
+        <div>
+          <h1
+            className="text-3xl mb-1"
+            style={{ fontFamily: 'Lora, serif', fontWeight: 500, color: '#15113C' }}
+          >
+            Insights
+          </h1>
+          <p
+            className="text-sm"
+            style={{ fontFamily: 'Inter, sans-serif', color: '#9CA3AF' }}
+          >
+            March · Personal · Private
+          </p>
+        </div>
+        <BellButton count={notifUnreadCount} onClick={onOpenNotifications} />
       </div>
 
       {/* Zone of Wellbeing */}
@@ -128,8 +149,8 @@ export function InsightsScreen({ onViewBurnoutAnalytics }: InsightsScreenProps =
         <div 
           className="p-5 rounded-3xl"
           style={{
-            background: 'white',
-            border: '2px solid #E5E7EB'
+            background: 'rgba(255,255,255,0.88)',
+            border: '1.5px solid rgba(139,92,246,0.10)'
           }}
         >
           {/* Bar Graph */}
@@ -247,8 +268,8 @@ export function InsightsScreen({ onViewBurnoutAnalytics }: InsightsScreenProps =
       <div
         className="p-5 rounded-3xl mb-4"
         style={{
-          background: 'white',
-          border: '2px solid #F3F4F6'
+          background: 'rgba(255,255,255,0.88)',
+          border: '1.5px solid rgba(139,92,246,0.10)'
         }}
       >
         <div className="flex items-center justify-between mb-4">
@@ -264,9 +285,9 @@ export function InsightsScreen({ onViewBurnoutAnalytics }: InsightsScreenProps =
           </p>
           <button 
             className="text-xs flex items-center gap-1"
-            style={{ 
+            style={{
               fontFamily: 'Inter, sans-serif',
-              color: '#6366F1',
+              color: '#7C3AED',
               fontWeight: 500
             }}
           >
@@ -355,7 +376,7 @@ export function InsightsScreen({ onViewBurnoutAnalytics }: InsightsScreenProps =
                 className="w-6 h-6 rounded-lg flex items-center justify-center" 
                 style={{ background: '#F59E0B' }}
               >
-                <AlertCircle className="w-3.5 h-3.5" style={{ color: 'white', strokeWidth: 2.5 }} />
+                <AlertCircle className="w-3.5 h-3.5" style={{ color: 'white', strokeWidth: 1.75 }} />
               </div>
               <span 
                 className="text-sm"
@@ -398,7 +419,7 @@ export function InsightsScreen({ onViewBurnoutAnalytics }: InsightsScreenProps =
                 className="w-6 h-6 rounded-lg flex items-center justify-center" 
                 style={{ background: '#06B6D4' }}
               >
-                <Smile className="w-3.5 h-3.5" style={{ color: 'white', strokeWidth: 2.5 }} />
+                <Smile className="w-3.5 h-3.5" style={{ color: 'white', strokeWidth: 1.75 }} />
               </div>
               <span 
                 className="text-sm"
@@ -440,8 +461,8 @@ export function InsightsScreen({ onViewBurnoutAnalytics }: InsightsScreenProps =
       <div 
         className="p-5 rounded-3xl mb-4"
         style={{
-          background: 'white',
-          border: '2px solid #F3F4F6'
+          background: 'rgba(255,255,255,0.88)',
+          border: '1.5px solid rgba(139,92,246,0.10)'
         }}
       >
         <p 
@@ -510,8 +531,8 @@ export function InsightsScreen({ onViewBurnoutAnalytics }: InsightsScreenProps =
                 <span 
                   className="px-2 py-1 rounded-full text-xs"
                   style={{
-                    background: '#FEE2E2',
-                    color: '#EF4444',
+                    background: '#EDE9FE',
+                    color: '#7C3AED',
                     fontFamily: 'Inter, sans-serif',
                     fontWeight: 600
                   }}
@@ -540,8 +561,8 @@ export function InsightsScreen({ onViewBurnoutAnalytics }: InsightsScreenProps =
       <div 
         className="p-5 rounded-3xl mb-4"
         style={{
-          background: 'white',
-          border: '2px solid #F3F4F6'
+          background: 'rgba(255,255,255,0.88)',
+          border: '1.5px solid rgba(139,92,246,0.10)'
         }}
       >
         <p 
@@ -619,8 +640,8 @@ export function InsightsScreen({ onViewBurnoutAnalytics }: InsightsScreenProps =
       <div 
         className="p-5 rounded-3xl mb-4"
         style={{
-          background: 'white',
-          border: '2px solid #F3F4F6'
+          background: 'rgba(255,255,255,0.88)',
+          border: '1.5px solid rgba(139,92,246,0.10)'
         }}
       >
         <div className="flex items-center justify-between mb-4">
@@ -636,9 +657,9 @@ export function InsightsScreen({ onViewBurnoutAnalytics }: InsightsScreenProps =
           </p>
           <button 
             className="text-xs flex items-center gap-1"
-            style={{ 
+            style={{
               fontFamily: 'Inter, sans-serif',
-              color: '#6366F1',
+              color: '#7C3AED',
               fontWeight: 500
             }}
           >
@@ -662,7 +683,7 @@ export function InsightsScreen({ onViewBurnoutAnalytics }: InsightsScreenProps =
                     className="w-6 h-6 rounded-lg flex items-center justify-center mt-0.5" 
                     style={{ background: goal.color }}
                   >
-                    <Target className="w-3.5 h-3.5" style={{ color: 'white', strokeWidth: 2.5 }} />
+                    <Target className="w-3.5 h-3.5" style={{ color: 'white', strokeWidth: 1.75 }} />
                   </div>
                   <div className="flex-1">
                     <p 

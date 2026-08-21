@@ -4,22 +4,23 @@ import { AnimatedLogo } from "./AnimatedLogo";
 interface ProfileScreenProps {
   userName: string;
   oracleName: string;
+  onOpenNotifications?: () => void;
 }
 
-export function ProfileScreen({ userName, oracleName }: ProfileScreenProps) {
+export function ProfileScreen({ userName, oracleName, onOpenNotifications }: ProfileScreenProps) {
   const menuItems = [
-    { icon: User,       label: "Account Settings",   iconBg: "#EDE9FE" },
-    { icon: Bell,       label: "Notifications",      iconBg: "#CFFAFE" },
-    { icon: Shield,     label: "Privacy & Security", iconBg: "#DCFCE7" },
-    { icon: Settings,   label: "App Preferences",    iconBg: "#FEF3C7" },
-    { icon: HelpCircle, label: "Help & Support",     iconBg: "#DBEAFE" },
+    { icon: User,       label: "Account Settings",   iconBg: "#EDE9FE", action: undefined as (() => void) | undefined },
+    { icon: Bell,       label: "Notifications",      iconBg: "#CFFAFE", action: onOpenNotifications },
+    { icon: Shield,     label: "Privacy & Security", iconBg: "#DCFCE7", action: undefined as (() => void) | undefined },
+    { icon: Settings,   label: "App Preferences",    iconBg: "#FEF3C7", action: undefined as (() => void) | undefined },
+    { icon: HelpCircle, label: "Help & Support",     iconBg: "#DBEAFE", action: undefined as (() => void) | undefined },
   ];
 
   return (
     <div 
       className="min-h-screen pb-32"
       style={{ 
-        background: 'linear-gradient(180deg, #FAF9F7 0%, #FFFFFF 100%)',
+        background: 'linear-gradient(180deg, #EDE9FE 0%, #F5F3FF 100%)',
         padding: '16px',
         paddingBottom: '128px'
       }}
@@ -77,7 +78,7 @@ export function ProfileScreen({ userName, oracleName }: ProfileScreenProps) {
               className="text-sm"
               style={{ 
                 fontFamily: 'Inter, sans-serif',
-                color: '#6B21A8'
+                color: '#6B7280'
               }}
             >
               Guided by {oracleName}
@@ -93,7 +94,7 @@ export function ProfileScreen({ userName, oracleName }: ProfileScreenProps) {
               style={{ 
                 fontFamily: 'Lora, serif',
                 fontWeight: 500,
-                color: '#5B21B6'
+                color: '#8B5CF6'
               }}
             >
               42
@@ -102,7 +103,7 @@ export function ProfileScreen({ userName, oracleName }: ProfileScreenProps) {
               className="text-xs"
               style={{ 
                 fontFamily: 'Inter, sans-serif',
-                color: '#6B21A8'
+                color: '#6B7280'
               }}
             >
               SESSIONS
@@ -114,7 +115,7 @@ export function ProfileScreen({ userName, oracleName }: ProfileScreenProps) {
               style={{ 
                 fontFamily: 'Lora, serif',
                 fontWeight: 500,
-                color: '#5B21B6'
+                color: '#8B5CF6'
               }}
             >
               14
@@ -123,7 +124,7 @@ export function ProfileScreen({ userName, oracleName }: ProfileScreenProps) {
               className="text-xs"
               style={{ 
                 fontFamily: 'Inter, sans-serif',
-                color: '#6B21A8'
+                color: '#6B7280'
               }}
             >
               DAY STREAK
@@ -135,7 +136,7 @@ export function ProfileScreen({ userName, oracleName }: ProfileScreenProps) {
               style={{ 
                 fontFamily: 'Lora, serif',
                 fontWeight: 500,
-                color: '#5B21B6'
+                color: '#8B5CF6'
               }}
             >
               8
@@ -144,7 +145,7 @@ export function ProfileScreen({ userName, oracleName }: ProfileScreenProps) {
               className="text-xs"
               style={{ 
                 fontFamily: 'Inter, sans-serif',
-                color: '#6B21A8'
+                color: '#6B7280'
               }}
             >
               INSIGHTS
@@ -160,15 +161,16 @@ export function ProfileScreen({ userName, oracleName }: ProfileScreenProps) {
             key={index}
             className="w-full p-4 rounded-2xl flex items-center gap-3 transition-all"
             style={{
-              background: 'white',
-              border: '2px solid #F3F4F6'
+              background: 'rgba(255,255,255,0.85)',
+              border: '1.5px solid rgba(255,255,255,0.6)'
             }}
+            onClick={item.action}
           >
             <div
               className="w-10 h-10 rounded-full flex items-center justify-center"
               style={{ background: item.iconBg }}
             >
-              <item.icon className="w-5 h-5" style={{ color: '#15113C' }} />
+              <item.icon className="w-5 h-5" style={{ color: '#15113C', strokeWidth: 1.75 }} />
             </div>
             <span 
               className="flex-1 text-left text-sm"
@@ -180,7 +182,7 @@ export function ProfileScreen({ userName, oracleName }: ProfileScreenProps) {
             >
               {item.label}
             </span>
-            <ChevronRight className="w-5 h-5" style={{ color: '#9CA3AF' }} />
+            <ChevronRight className="w-5 h-5" style={{ color: '#9CA3AF', strokeWidth: 1.75 }} />
           </button>
         ))}
       </div>

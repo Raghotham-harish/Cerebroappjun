@@ -6,12 +6,12 @@ interface SleepRitualScreenProps {
 }
 
 const ritualSteps = [
-  { Icon: Smartphone,   title: "Put screens away",       description: "Place your phone face-down or in another room. This screen is the last one tonight.", done: false },
-  { Icon: Lightbulb,   title: "Dim the lights",          description: "Lower the light around you. Signal to your body that night is here.", done: false },
-  { Icon: Thermometer, title: "Cool the room",           description: "Open a window or lower the thermostat. The body sleeps best cool.", done: false },
-  { Icon: Coffee,      title: "Warm drink (optional)",   description: "Chamomile, warm milk, or decaf tea — something warm and calm.", done: false },
-  { Icon: NotebookPen, title: "Brain dump",              description: "Write down anything unfinished on your mind. It's captured — you can rest.", done: false },
-  { Icon: Moon,        title: "Body scan relaxation",    description: "Lie down. Starting at your toes, consciously release each part of your body upward.", done: false },
+  { Icon: Smartphone,   title: "Put screens away",       description: "Place your phone face-down or in another room. This screen is the last one tonight.", iconBg: "#DBEAFE", iconColor: "#1D4ED8" },
+  { Icon: Lightbulb,   title: "Dim the lights",          description: "Lower the light around you. Signal to your body that night is here.", iconBg: "#FEF3C7", iconColor: "#D97706" },
+  { Icon: Thermometer, title: "Cool the room",           description: "Open a window or lower the thermostat. The body sleeps best cool.", iconBg: "#CFFAFE", iconColor: "#0E7490" },
+  { Icon: Coffee,      title: "Warm drink (optional)",   description: "Chamomile, warm milk, or decaf tea — something warm and calm.", iconBg: "#FDE8D8", iconColor: "#C2410C" },
+  { Icon: NotebookPen, title: "Brain dump",              description: "Write down anything unfinished on your mind. It's captured — you can rest.", iconBg: "#EDE9FE", iconColor: "#7C3AED" },
+  { Icon: Moon,        title: "Body scan relaxation",    description: "Lie down. Starting at your toes, consciously release each part of your body upward.", iconBg: "#1E1B4B", iconColor: "#A5B4FC" },
 ];
 
 const windDownBreaths = [
@@ -158,12 +158,12 @@ export function SleepRitualScreen({ onDone }: SleepRitualScreenProps) {
           >
             <div
               className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-all"
-              style={{ background: checked[i] ? "#8B5CF6" : "#F3F4F6" }}
+              style={{ background: checked[i] ? "#8B5CF6" : step.iconBg }}
             >
               {checked[i] ? (
                 <Check className="w-5 h-5" style={{ color: "white" }} />
               ) : (
-                <step.Icon className="w-4 h-4" style={{ color: "#6B7280", strokeWidth: 2 }} />
+                <step.Icon className="w-4 h-4" style={{ color: step.iconColor, strokeWidth: 1.75 }} />
               )}
             </div>
             <div className="flex-1">

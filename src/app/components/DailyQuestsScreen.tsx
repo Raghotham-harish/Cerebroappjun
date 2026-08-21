@@ -31,7 +31,7 @@ export function DailyQuestsScreen() {
     <div 
       className="min-h-screen pb-24"
       style={{ 
-        background: 'linear-gradient(180deg, #FAF9F7 0%, #FFFFFF 100%)',
+        background: 'linear-gradient(180deg, #EDE9FE 0%, #F5F3FF 100%)',
         padding: '16px'
       }}
     >
@@ -63,7 +63,7 @@ export function DailyQuestsScreen() {
           <div className="flex items-center gap-2">
             <div 
               className="w-8 h-8 rounded-full flex items-center justify-center"
-              style={{ background: '#FBBF24' }}
+              style={{ background: '#8B5CF6' }}
             >
               <span 
                 className="text-xs"
@@ -102,13 +102,13 @@ export function DailyQuestsScreen() {
         {/* Progress Bar */}
         <div 
           className="h-3 rounded-full mb-6"
-          style={{ background: 'rgba(251, 191, 36, 0.2)' }}
+          style={{ background: 'rgba(139, 92, 246, 0.15)' }}
         >
-          <div 
+          <div
             className="h-full rounded-full"
-            style={{ 
+            style={{
               width: '68%',
-              background: '#FBBF24'
+              background: '#8B5CF6'
             }}
           />
         </div>
@@ -192,7 +192,7 @@ export function DailyQuestsScreen() {
           <button 
             className="px-4 py-2 rounded-full text-sm"
             style={{
-              background: '#06B6D4',
+              background: '#8B5CF6',
               color: 'white',
               fontFamily: 'Inter, sans-serif',
               fontWeight: 600
@@ -220,7 +220,7 @@ export function DailyQuestsScreen() {
             className="text-xs flex items-center gap-1"
             style={{ 
               fontFamily: 'Inter, sans-serif',
-              color: '#6366F1',
+              color: '#7C3AED',
               fontWeight: 500
             }}
           >
@@ -237,7 +237,7 @@ export function DailyQuestsScreen() {
               key={quest.name}
               className="p-4 rounded-3xl flex items-center justify-between"
               style={{
-                background: 'white',
+                background: 'rgba(255,255,255,0.88)',
                 border: '2px solid #F3F4F6'
               }}
             >
@@ -430,7 +430,7 @@ export function DailyQuestsScreen() {
                 style={{ border: `2px solid ${achievement.unlocked ? '#FBBF24' : '#E5E7EB'}` }}
               >
                 {achievement.unlocked && (
-                  <div className="w-2 h-2 rounded-sm" style={{ background: '#FBBF24' }} />
+                  <div className="w-2 h-2 rounded-sm" style={{ background: '#8B5CF6' }} />
                 )}
               </div>
               <p 
@@ -452,7 +452,7 @@ export function DailyQuestsScreen() {
       <div 
         className="p-5 rounded-3xl"
         style={{
-          background: 'white',
+          background: 'rgba(255,255,255,0.88)',
           border: '2px solid #F3F4F6'
         }}
       >

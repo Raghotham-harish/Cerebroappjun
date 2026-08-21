@@ -131,7 +131,7 @@ export function ZOWHistory({ onBack }: ZOWHistoryProps) {
               className="text-xs leading-relaxed"
               style={{
                 fontFamily: 'Inter, sans-serif',
-                color: '#6B21A8',
+                color: '#6B7280',
                 fontStyle: 'italic'
               }}
             >

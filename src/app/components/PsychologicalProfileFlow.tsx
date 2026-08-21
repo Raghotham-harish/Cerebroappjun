@@ -268,7 +268,7 @@ const CATEGORIES: Category[] = [
 ];
 
 // ── Rank badge ────────────────────────────────────────────────────────────────
-const RANK_COLORS = ["#9810FA", "#6366F1", "#A3A3A3", "#C084FC"];
+const RANK_COLORS = ["#9810FA", "#8B5CF6", "#A3A3A3", "#C084FC"];
 function RankBadge({ rank }: { rank: number }) {
   return (
     <div

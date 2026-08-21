@@ -15,12 +15,39 @@ interface AffirmationsScreenProps {
   onDone: () => void;
 }
 
-// semantic tag colours only (chip-level, not page backgrounds)
 const presets = [
-  { category: "Strength",   chipBg: "#BBF7D0", affirmations: ["I am capable of handling what comes my way.", "I grow stronger with every challenge I face.", "I trust in my own resilience."] },
-  { category: "Calm",       chipBg: "#BFDBFE", affirmations: ["I am allowed to take up space and move slowly.", "Peace is available to me in this moment.", "I breathe, and in breathing, I return to myself."] },
-  { category: "Self-Worth", chipBg: "#FBCFE8", affirmations: ["I am worthy of love — not because of what I do, but because I exist.", "My value does not depend on my productivity.", "I am enough, exactly as I am."] },
-  { category: "Clarity",    chipBg: "#C4B5FD", affirmations: ["My mind is clear and open to new possibilities.", "I trust the process, even when I can't see the full picture.", "I move forward with courage and intention."] },
+  {
+    category: "Strength",
+    chipBg: "#BBF7D0",
+    cardGradient: "linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%)",
+    accentColor: "#065F46",
+    ambientColor: "rgba(6,95,70,0.10)",
+    affirmations: ["I am capable of handling what comes my way.", "I grow stronger with every challenge I face.", "I trust in my own resilience."],
+  },
+  {
+    category: "Calm",
+    chipBg: "#BFDBFE",
+    cardGradient: "linear-gradient(135deg, #DBEAFE 0%, #EDE9FE 100%)",
+    accentColor: "#1E40AF",
+    ambientColor: "rgba(30,64,175,0.10)",
+    affirmations: ["I am allowed to take up space and move slowly.", "Peace is available to me in this moment.", "I breathe, and in breathing, I return to myself."],
+  },
+  {
+    category: "Self-Worth",
+    chipBg: "#FBCFE8",
+    cardGradient: "linear-gradient(135deg, #FCE7F3 0%, #FDE8FF 100%)",
+    accentColor: "#9D174D",
+    ambientColor: "rgba(157,23,77,0.10)",
+    affirmations: ["I am worthy of love — not because of what I do, but because I exist.", "My value does not depend on my productivity.", "I am enough, exactly as I am."],
+  },
+  {
+    category: "Clarity",
+    chipBg: "#C4B5FD",
+    cardGradient: "linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%)",
+    accentColor: "#4C1D95",
+    ambientColor: "rgba(76,29,149,0.12)",
+    affirmations: ["My mind is clear and open to new possibilities.", "I trust the process, even when I can't see the full picture.", "I move forward with courage and intention."],
+  },
 ];
 
 const PURPLE = "#8B5CF6";
@@ -114,28 +141,32 @@ export function AffirmationsScreen({ onDone }: AffirmationsScreenProps) {
     return (
       <div className="min-h-screen" style={{ background: PAGE_BG, padding: "16px", paddingBottom: "40px" }}>
         <div className="flex items-center gap-3 pt-8 pb-6">
-          <button onClick={() => setView("home")} className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.7)", border: "1.5px solid rgba(0,0,0,0.08)" }}>
+          <button onClick={() => setView("home")} className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.7)", border: "1.5px solid rgba(0,0,0,0.08)" }}>
             <ArrowLeft className="w-5 h-5" style={{ color: "#15113C" }} />
           </button>
           <h1 className="text-xl" style={{ fontFamily: "Lora, serif", fontWeight: 500, color: "#15113C" }}>Choose a theme</h1>
         </div>
-        <div className="space-y-3">
+        <div className="space-y-4">
           {presets.map((p) => (
             <button
               key={p.category}
               onClick={() => startPractice(p)}
-              className="w-full p-5 rounded-3xl text-left active:scale-95 transition-all"
-              style={{ background: "rgba(255,255,255,0.8)", border: "1.5px solid rgba(139,92,246,0.15)" }}
+              className="w-full rounded-3xl text-left active:scale-95 transition-all overflow-hidden"
+              style={{ background: p.cardGradient, position: "relative", minHeight: 120 }}
             >
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-base" style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, color: "#15113C" }}>{p.category}</span>
-                <span className="px-2 py-0.5 rounded-full text-xs" style={{ background: p.chipBg, color: "#15113C", fontFamily: "Inter, sans-serif", fontWeight: 600 }}>
-                  {p.affirmations.length} affirmations
-                </span>
+              {/* Ambient circle */}
+              <div className="absolute" style={{ width: 100, height: 100, borderRadius: "50%", background: p.ambientColor, top: -20, right: -10 }} />
+              <div className="relative p-6">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs font-bold tracking-widest uppercase" style={{ fontFamily: "Inter, sans-serif", color: p.accentColor }}>{p.category}</span>
+                  <span className="px-2 py-0.5 rounded-full text-xs" style={{ background: "rgba(255,255,255,0.55)", color: p.accentColor, fontFamily: "Inter, sans-serif", fontWeight: 600 }}>
+                    {p.affirmations.length}
+                  </span>
+                </div>
+                <p className="text-base leading-snug" style={{ fontFamily: "Lora, serif", fontStyle: "italic", color: "#15113C", lineHeight: 1.55 }}>
+                  "{p.affirmations[0]}"
+                </p>
               </div>
-              <p className="text-xs" style={{ fontFamily: "Inter, sans-serif", color: "#6B7280", fontStyle: "italic" }}>
-                "{p.affirmations[0]}"
-              </p>
             </button>
           ))}
         </div>
@@ -147,7 +178,7 @@ export function AffirmationsScreen({ onDone }: AffirmationsScreenProps) {
     return (
       <div className="min-h-screen flex flex-col" style={{ background: PAGE_BG, padding: "16px", paddingBottom: "40px" }}>
         <div className="flex items-center gap-3 pt-8 pb-6">
-          <button onClick={() => setView("home")} className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.7)", border: "1.5px solid rgba(0,0,0,0.08)" }}>
+          <button onClick={() => setView("home")} className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.7)", border: "1.5px solid rgba(0,0,0,0.08)" }}>
             <ArrowLeft className="w-5 h-5" style={{ color: "#15113C" }} />
           </button>
           <div>
@@ -195,7 +226,7 @@ export function AffirmationsScreen({ onDone }: AffirmationsScreenProps) {
   return (
     <div className="min-h-screen" style={{ background: PAGE_BG, padding: "16px", paddingBottom: "40px" }}>
       <div className="flex items-center gap-3 pt-8 pb-8">
-        <button onClick={onDone} className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.7)", border: "1.5px solid rgba(0,0,0,0.08)" }}>
+        <button onClick={onDone} className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.7)", border: "1.5px solid rgba(0,0,0,0.08)" }}>
           <ArrowLeft className="w-5 h-5" style={{ color: "#15113C" }} />
         </button>
         <div>

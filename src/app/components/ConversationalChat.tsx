@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Mic, Volume2, VolumeX, ArrowUp, Heart, BookOpen, Wind, Award, Lightbulb } from "lucide-react";
+import { Mic, Volume2, VolumeX, ArrowUp, Heart, BookOpen, Wind, Award, Lightbulb, Bell, ThumbsUp, ThumbsDown, Scan, PenLine, BookHeart, Sparkles, Eye, Layers, ShieldCheck } from "lucide-react";
 import { VoiceWaveOrb } from "./VoiceWaveOrb";
 import { BottomNav } from "./BottomNav";
 import { AnimatedLogo } from "./AnimatedLogo";
@@ -7,6 +7,7 @@ import { InsightsScreen } from "./InsightsScreen";
 import { ToolsScreen } from "./ToolsScreen";
 import { EnhancedHomeScreen } from "./EnhancedHomeScreen";
 import { ProfileScreen } from "./ProfileScreen";
+import { NotificationsScreen } from "./NotificationsScreen";
 import { BreathingExercise } from "./BreathingExercise";
 import { GratitudeExercise } from "./GratitudeExercise";
 import { InsightReelScreen } from "./InsightReelScreen";
@@ -45,6 +46,18 @@ import { ZERScreen } from "./tools/ZERScreen";
 import { AffirmationsScreen } from "./tools/AffirmationsScreen";
 import { CrisisGroundingScreen } from "./tools/CrisisGroundingScreen";
 import { SleepRitualScreen } from "./tools/SleepRitualScreen";
+import { GratitudeAssessmentScreen } from "./tools/GratitudeAssessmentScreen";
+import { AnxietyAssessmentScreen } from "./tools/AnxietyAssessmentScreen";
+import { TraumaAssessmentScreen } from "./tools/TraumaAssessmentScreen";
+import { BurnoutBATScreen } from "./tools/BurnoutBATScreen";
+import { GAD7Screen } from "./tools/GAD7Screen";
+import { DASSScreen } from "./tools/DASSScreen";
+import { GRATScreen } from "./tools/GRATScreen";
+import { OLBIScreen } from "./tools/OLBIScreen";
+import { CBIScreen } from "./tools/CBIScreen";
+import { ACEScreen } from "./tools/ACEScreen";
+import { SIBOQScreen } from "./tools/SIBOQScreen";
+import { RBSTScreen } from "./tools/RBSTScreen";
 
 interface ConversationalChatProps {
   oracleName: string;
@@ -55,7 +68,8 @@ interface ConversationalChatProps {
 
 type ContextualCard = {
   id: string;
-  emoji: string;
+  icon: React.ElementType;
+  iconBg: string;
   title: string;
   description: string;
   ctaLabel?: string;
@@ -84,30 +98,30 @@ const CONTEXTUAL_SETS: Record<string, { intro: string; cards: ContextualCard[] }
     cards: [
       {
         id: 'zer-body',
-        emoji: '🌿',
+        icon: Scan, iconBg: '#D1FAE5',
         title: 'Quick Body Scan',
         description: 'Ground yourself in 3 minutes by scanning from head to feet.',
         ctaLabel: 'Start body scan',
         ctaAction: 'bodyscan',
-        bg: '#EDE9FE', border: '#C4B5FD', btnColor: '#8B5CF6',
+        bg: '#F5F3FF', border: '#DDD6FE', btnColor: '#8B5CF6',
       },
       {
         id: 'zer-breath',
-        emoji: '🌬️',
+        icon: Wind, iconBg: '#CFFAFE',
         title: 'Short Breath Loop',
         description: 'A 2-minute breathing cycle to settle your nervous system.',
         ctaLabel: 'Try breath loop',
         ctaAction: 'breath',
-        bg: '#EDE9FE', border: '#C4B5FD', btnColor: '#8B5CF6',
+        bg: '#F5F3FF', border: '#DDD6FE', btnColor: '#8B5CF6',
       },
       {
         id: 'zer-reflect',
-        emoji: '💭',
+        icon: PenLine, iconBg: '#EDE9FE',
         title: 'What needs your attention right now?',
         description: 'Notice what is present — no need to fix it. Just name it.',
         ctaLabel: 'Open journal',
         ctaAction: 'gratitude',
-        bg: '#EDE9FE', border: '#C4B5FD', btnColor: '#8B5CF6',
+        bg: '#F5F3FF', border: '#DDD6FE', btnColor: '#8B5CF6',
       },
     ],
   },
@@ -116,21 +130,21 @@ const CONTEXTUAL_SETS: Record<string, { intro: string; cards: ContextualCard[] }
     cards: [
       {
         id: 'breath-journal',
-        emoji: '📝',
+        icon: BookHeart, iconBg: '#BFDBFE',
         title: 'Capture this moment',
         description: 'Write one thing you\'re grateful for right now.',
         ctaLabel: 'Open gratitude journal',
         ctaAction: 'gratitude',
-        bg: '#EDE9FE', border: '#C4B5FD', btnColor: '#8B5CF6',
+        bg: '#F5F3FF', border: '#DDD6FE', btnColor: '#8B5CF6',
       },
       {
         id: 'breath-body',
-        emoji: '🌿',
+        icon: Scan, iconBg: '#D1FAE5',
         title: 'Notice your body',
         description: 'A 3-minute body scan to complete the regulation cycle.',
         ctaLabel: 'Start body scan',
         ctaAction: 'bodyscan',
-        bg: '#EDE9FE', border: '#C4B5FD', btnColor: '#8B5CF6',
+        bg: '#F5F3FF', border: '#DDD6FE', btnColor: '#8B5CF6',
       },
     ],
   },
@@ -139,19 +153,19 @@ const CONTEXTUAL_SETS: Record<string, { intro: string; cards: ContextualCard[] }
     cards: [
       {
         id: 'grat-affirm',
-        emoji: '✨',
+        icon: Sparkles, iconBg: '#FEF3C7',
         title: 'Set an affirmation',
         description: 'Turn your gratitude into a powerful personal affirmation.',
         ctaLabel: 'Open affirmations',
         ctaAction: 'affirmations',
-        bg: '#EDE9FE', border: '#C4B5FD', btnColor: '#8B5CF6',
+        bg: '#F5F3FF', border: '#DDD6FE', btnColor: '#8B5CF6',
       },
       {
         id: 'grat-surround',
-        emoji: '👀',
+        icon: Eye, iconBg: '#D1FAE5',
         title: 'Two-minute focus reset',
         description: 'Look around — what in your surroundings can hold your attention for 2 minutes?',
-        bg: '#EDE9FE', border: '#C4B5FD', btnColor: '#8B5CF6',
+        bg: '#F5F3FF', border: '#DDD6FE', btnColor: '#8B5CF6',
       },
     ],
   },
@@ -160,21 +174,21 @@ const CONTEXTUAL_SETS: Record<string, { intro: string; cards: ContextualCard[] }
     cards: [
       {
         id: 'tool-zer',
-        emoji: '📍',
+        icon: Layers, iconBg: '#FFE4E6',
         title: 'Check your ZER zone',
         description: 'Notice where you are emotionally after this activity.',
         ctaLabel: 'Open ZER check-in',
         ctaAction: 'zer',
-        bg: '#EDE9FE', border: '#C4B5FD', btnColor: '#8B5CF6',
+        bg: '#F5F3FF', border: '#DDD6FE', btnColor: '#8B5CF6',
       },
       {
         id: 'tool-breath',
-        emoji: '🌬️',
+        icon: Wind, iconBg: '#CFFAFE',
         title: 'Breath loop',
         description: 'A quick breathing cycle to anchor the work you just did.',
         ctaLabel: 'Start breathing',
         ctaAction: 'breath',
-        bg: '#EDE9FE', border: '#C4B5FD', btnColor: '#8B5CF6',
+        bg: '#F5F3FF', border: '#DDD6FE', btnColor: '#8B5CF6',
       },
     ],
   },
@@ -187,6 +201,8 @@ export function ConversationalChat({ oracleName, userName, completedActivity }: 
     { type: 'oracle', text: `Hey ${userName}, what do you wish to share?` }
   ]);
   const [activeTab, setActiveTab] = useState<"activities" | "chat" | "insights" | "tools" | "profile">("chat");
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifUnreadCount, setNotifUnreadCount] = useState(3);
   const [micEnabled, setMicEnabled] = useState(true);
   const [speakerEnabled, setSpeakerEnabled] = useState(true);
   const [isTyping, setIsTyping] = useState(false);
@@ -205,6 +221,7 @@ export function ConversationalChat({ oracleName, userName, completedActivity }: 
   const [activeGame, setActiveGame] = useState<string | null>(null);
   const [activeTool, setActiveTool] = useState<string | null>(null);
   const [cardFeedback, setCardFeedback] = useState<Record<number, 'up' | 'down'>>({});
+  const [thumbAnimKey, setThumbAnimKey] = useState<Record<string, number>>({});
   const handleTabChange = (tab: typeof activeTab) => { setActiveTool(null); setActiveTab(tab); };
 
   // Inject contextual follow-up cards when returning from a completed activity
@@ -260,6 +277,7 @@ export function ConversationalChat({ oracleName, userName, completedActivity }: 
   };
 
   // Read new messages aloud
+
   useEffect(() => {
     if (messages.length > 0) {
       const lastMessage = messages[messages.length - 1];
@@ -456,10 +474,26 @@ export function ConversationalChat({ oracleName, userName, completedActivity }: 
   };
 
   const renderChatView = () => (
-    <div 
+    <div
       className="min-h-screen relative overflow-hidden flex flex-col"
       style={{ background: 'transparent' }}
     >
+      <style>{`
+        @keyframes ceThumbUp {
+          0%   { transform: scale(1) rotate(0deg); }
+          25%  { transform: scale(1.6) rotate(-15deg); }
+          55%  { transform: scale(1.25) rotate(8deg); }
+          80%  { transform: scale(1.1) rotate(-3deg); }
+          100% { transform: scale(1) rotate(0deg); }
+        }
+        @keyframes ceThumbDown {
+          0%, 100% { transform: translateX(0) rotate(0deg); }
+          20%  { transform: translateX(-4px) rotate(-8deg); }
+          40%  { transform: translateX(4px) rotate(8deg); }
+          60%  { transform: translateX(-3px) rotate(-4deg); }
+          80%  { transform: translateX(2px) rotate(2deg); }
+        }
+      `}</style>
       {/* Top Bar - Sticky */}
       <div 
         className="sticky top-0 z-20 flex items-center justify-between px-4 py-3 border-b"
@@ -495,33 +529,66 @@ export function ConversationalChat({ oracleName, userName, completedActivity }: 
           </div>
         </div>
 
-        {/* Mic/Speaker Controls */}
-        <div className="flex gap-2">
+        {/* Right controls */}
+        <div className="flex gap-2 items-center">
+          {/* Notification bell */}
+          <div className="relative">
+            <button
+              onClick={() => { setShowNotifications(true); setActiveTab("profile"); setNotifUnreadCount(0); }}
+              className="w-11 h-11 rounded-full flex items-center justify-center transition-colors"
+              style={{
+                background: "rgba(255,255,255,0.9)",
+                border: "1.5px solid rgba(196,181,253,0.5)",
+              }}
+              aria-label="Notifications"
+            >
+              <Bell className="w-4 h-4" style={{ color: "#15113C", strokeWidth: 1.75 }} />
+            </button>
+            {notifUnreadCount > 0 && (
+              <div
+                className="absolute -top-1 -right-1 flex items-center justify-center rounded-full"
+                style={{
+                  minWidth: 16,
+                  height: 16,
+                  background: "#8B5CF6",
+                  fontFamily: "Inter",
+                  fontWeight: 700,
+                  fontSize: "9px",
+                  color: "white",
+                  paddingLeft: 3,
+                  paddingRight: 3,
+                }}
+              >
+                {notifUnreadCount}
+              </div>
+            )}
+          </div>
+
           <button
             onClick={() => setSpeakerEnabled(!speakerEnabled)}
-            className="w-9 h-9 rounded-full flex items-center justify-center transition-colors"
+            className="w-11 h-11 rounded-full flex items-center justify-center transition-colors"
             style={{
               background: speakerEnabled ? 'rgba(255,255,255,0.9)' : 'rgba(243,244,246,0.8)',
-              border: `2px solid ${speakerEnabled ? '#C4B5FD' : 'rgba(229,231,235,0.8)'}`
+              border: `1.5px solid ${speakerEnabled ? '#C4B5FD' : 'rgba(229,231,235,0.8)'}`
             }}
           >
             {speakerEnabled ? (
-              <Volume2 className="w-4 h-4" style={{ color: '#8B5CF6' }} />
+              <Volume2 className="w-4 h-4" style={{ color: '#8B5CF6', strokeWidth: 1.75 }} />
             ) : (
-              <VolumeX className="w-4 h-4" style={{ color: '#9CA3AF' }} />
+              <VolumeX className="w-4 h-4" style={{ color: '#9CA3AF', strokeWidth: 1.75 }} />
             )}
           </button>
           <button
             onClick={() => setMicEnabled(!micEnabled)}
-            className="w-9 h-9 rounded-full flex items-center justify-center transition-colors"
+            className="w-11 h-11 rounded-full flex items-center justify-center transition-colors"
             style={{
               background: micEnabled ? 'rgba(255,255,255,0.9)' : 'rgba(243,244,246,0.8)',
-              border: `2px solid ${micEnabled ? '#C4B5FD' : 'rgba(229,231,235,0.8)'}`
+              border: `1.5px solid ${micEnabled ? '#C4B5FD' : 'rgba(229,231,235,0.8)'}`
             }}
           >
-            <Mic 
-              className="w-4 h-4" 
-              style={{ color: micEnabled ? '#8B5CF6' : '#9CA3AF' }}
+            <Mic
+              className="w-4 h-4"
+              style={{ color: micEnabled ? '#8B5CF6' : '#9CA3AF', strokeWidth: 1.75 }}
             />
           </button>
         </div>
@@ -679,40 +746,66 @@ export function ConversationalChat({ oracleName, userName, completedActivity }: 
                       </div>
                       <div className="flex items-center gap-2">
                         <div
-                          className="inline-block px-3 py-1.5 rounded-full"
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg"
                           style={{
-                            background: '#8B5CF6',
-                            color: 'white',
+                            background: '#DCFCE7',
+                            color: '#15803D',
                             fontFamily: 'Inter, sans-serif',
-                            fontSize: '11px',
-                            fontWeight: 600,
-                            letterSpacing: '0.05em'
+                            fontSize: '10px',
+                            fontWeight: 700,
+                            letterSpacing: '0.06em',
+                            border: '1px solid #BBF7D0',
                           }}
                         >
-                          ✓ COMPLETED
+                          <svg width="9" height="9" viewBox="0 0 9 9" fill="none">
+                            <path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="#15803D" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                          DONE
                         </div>
                         {/* Thumbs up / down feedback */}
                         <button
-                          onClick={() => setCardFeedback(prev => ({ ...prev, [msgIndex]: prev[i] === 'up' ? undefined as any : 'up' }))}
-                          className="w-7 h-7 rounded-full flex items-center justify-center transition-all"
+                          onClick={() => {
+                            setCardFeedback(prev => ({ ...prev, [i]: prev[i] === 'up' ? undefined as any : 'up' }));
+                            setThumbAnimKey(prev => ({ ...prev, [`${i}-up`]: (prev[`${i}-up`] || 0) + 1 }));
+                          }}
+                          className="w-8 h-8 rounded-xl flex items-center justify-center transition-all active:scale-90"
                           style={{
-                            background: cardFeedback[i] === 'up' ? '#8B5CF6' : 'rgba(139,92,246,0.1)',
-                            border: '1.5px solid rgba(139,92,246,0.3)',
+                            background: cardFeedback[i] === 'up' ? '#8B5CF6' : 'rgba(255,255,255,0.9)',
+                            border: cardFeedback[i] === 'up' ? '1.5px solid #8B5CF6' : '1.5px solid rgba(139,92,246,0.3)',
                           }}
                           title="This helped"
                         >
-                          <span style={{ fontSize: '13px', lineHeight: 1 }}>👍</span>
+                          <ThumbsUp
+                            key={thumbAnimKey[`${i}-up`] || 0}
+                            className="w-3.5 h-3.5"
+                            style={{
+                              color: cardFeedback[i] === 'up' ? 'white' : '#8B5CF6',
+                              strokeWidth: 2,
+                              animation: thumbAnimKey[`${i}-up`] ? 'ceThumbUp 0.45s cubic-bezier(0.36,0.07,0.19,0.97) forwards' : undefined,
+                            }}
+                          />
                         </button>
                         <button
-                          onClick={() => setCardFeedback(prev => ({ ...prev, [msgIndex]: prev[i] === 'down' ? undefined as any : 'down' }))}
-                          className="w-7 h-7 rounded-full flex items-center justify-center transition-all"
+                          onClick={() => {
+                            setCardFeedback(prev => ({ ...prev, [i]: prev[i] === 'down' ? undefined as any : 'down' }));
+                            setThumbAnimKey(prev => ({ ...prev, [`${i}-down`]: (prev[`${i}-down`] || 0) + 1 }));
+                          }}
+                          className="w-8 h-8 rounded-xl flex items-center justify-center transition-all active:scale-90"
                           style={{
-                            background: cardFeedback[i] === 'down' ? '#EF444422' : 'rgba(239,68,68,0.08)',
-                            border: '1.5px solid rgba(239,68,68,0.25)',
+                            background: cardFeedback[i] === 'down' ? '#FEE2E2' : 'rgba(255,255,255,0.9)',
+                            border: cardFeedback[i] === 'down' ? '1.5px solid #FCA5A5' : '1.5px solid rgba(239,68,68,0.25)',
                           }}
                           title="This didn't help"
                         >
-                          <span style={{ fontSize: '13px', lineHeight: 1 }}>👎</span>
+                          <ThumbsDown
+                            key={thumbAnimKey[`${i}-down`] || 0}
+                            className="w-3.5 h-3.5"
+                            style={{
+                              color: cardFeedback[i] === 'down' ? '#EF4444' : '#F87171',
+                              strokeWidth: 2,
+                              animation: thumbAnimKey[`${i}-down`] ? 'ceThumbDown 0.4s ease forwards' : undefined,
+                            }}
+                          />
                         </button>
                       </div>
                     </div>
@@ -781,11 +874,11 @@ export function ConversationalChat({ oracleName, userName, completedActivity }: 
                   }}
                 >
                   <div className="flex items-start gap-3">
-                    <div 
-                      className="w-10 h-10 rounded-full flex items-center justify-center"
-                      style={{ background: '#8B5CF6' }}
+                    <div
+                      className="w-10 h-10 rounded-2xl flex items-center justify-center"
+                      style={{ background: '#EDE9FE' }}
                     >
-                      <span className="text-white text-lg">✨</span>
+                      <Lightbulb className="w-5 h-5" style={{ color: '#7C3AED', strokeWidth: 1.75 }} />
                     </div>
                     <div className="flex-1">
                       <h4 
@@ -793,7 +886,7 @@ export function ConversationalChat({ oracleName, userName, completedActivity }: 
                         style={{ 
                           fontFamily: 'Lora, serif',
                           fontWeight: 500,
-                          color: '#5B21B6'
+                          color: '#8B5CF6'
                         }}
                       >
                         {msg.title}
@@ -802,7 +895,7 @@ export function ConversationalChat({ oracleName, userName, completedActivity }: 
                         className="text-sm mb-2 leading-relaxed"
                         style={{ 
                           fontFamily: 'Inter, sans-serif',
-                          color: '#6B21A8'
+                          color: '#6B7280'
                         }}
                       >
                         {msg.description}
@@ -811,7 +904,7 @@ export function ConversationalChat({ oracleName, userName, completedActivity }: 
                         className="inline-block px-3 py-1.5 rounded-full"
                         style={{
                           background: 'rgba(139, 92, 246, 0.2)',
-                          color: '#5B21B6',
+                          color: '#8B5CF6',
                           fontFamily: 'Inter, sans-serif',
                           fontSize: '12px',
                           fontWeight: 600
@@ -912,7 +1005,7 @@ export function ConversationalChat({ oracleName, userName, completedActivity }: 
                         style={{ 
                           fontFamily: 'Lora, serif',
                           fontWeight: 500,
-                          color: '#5B21B6'
+                          color: '#8B5CF6'
                         }}
                       >
                         {msg.title}
@@ -921,7 +1014,7 @@ export function ConversationalChat({ oracleName, userName, completedActivity }: 
                         className="text-sm leading-relaxed"
                         style={{ 
                           fontFamily: 'Inter, sans-serif',
-                          color: '#6B21A8'
+                          color: '#6B7280'
                         }}
                       >
                         {msg.description}
@@ -951,7 +1044,7 @@ export function ConversationalChat({ oracleName, userName, completedActivity }: 
                         className="text-sm leading-relaxed"
                         style={{ 
                           fontFamily: 'Inter, sans-serif',
-                          color: '#6B21A8'
+                          color: '#6B7280'
                         }}
                       >
                         {msg.text}
@@ -960,7 +1053,7 @@ export function ConversationalChat({ oracleName, userName, completedActivity }: 
                         className="inline-block px-3 py-1.5 rounded-full"
                         style={{
                           background: 'rgba(139, 92, 246, 0.2)',
-                          color: '#5B21B6',
+                          color: '#8B5CF6',
                           fontFamily: 'Inter, sans-serif',
                           fontSize: '12px',
                           fontWeight: 600
@@ -984,48 +1077,57 @@ export function ConversationalChat({ oracleName, userName, completedActivity }: 
                   </p>
                   {/* Micro-cards */}
                   <div className="space-y-2">
-                    {msg.cards.map(card => (
-                      <div
-                        key={card.id}
-                        className="p-4 rounded-3xl"
-                        style={{ background: card.bg, border: `2px solid ${card.border}` }}
-                      >
-                        <div className="flex items-start gap-3">
-                          <span className="text-2xl flex-shrink-0 mt-0.5">{card.emoji}</span>
-                          <div className="flex-1 min-w-0">
-                            <p
-                              className="text-sm mb-1"
-                              style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600, color: '#15113C' }}
+                    {msg.cards.map(card => {
+                      const CardIcon = card.icon;
+                      return (
+                        <div
+                          key={card.id}
+                          className="p-4 rounded-3xl"
+                          style={{ background: card.bg, border: `1.5px solid ${card.border}` }}
+                        >
+                          <div className="flex items-start gap-3">
+                            {/* Tools-style icon holder */}
+                            <div
+                              className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0"
+                              style={{ background: card.iconBg }}
                             >
-                              {card.title}
-                            </p>
-                            <p
-                              className="text-xs mb-3"
-                              style={{ fontFamily: 'Inter, sans-serif', color: '#6B7280', lineHeight: 1.55 }}
-                            >
-                              {card.description}
-                            </p>
-                            {card.ctaLabel && card.ctaAction && (
-                              <button
-                                onClick={() => {
-                                  setActiveTool(card.ctaAction!);
-                                  setActiveTab('tools');
-                                }}
-                                className="w-full py-2.5 rounded-2xl text-sm transition-all active:scale-95"
-                                style={{
-                                  background: card.btnColor,
-                                  color: 'white',
-                                  fontFamily: 'Inter, sans-serif',
-                                  fontWeight: 600,
-                                }}
+                              <CardIcon className="w-5 h-5" style={{ color: '#15113C', strokeWidth: 1.75 }} />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p
+                                className="text-sm mb-1"
+                                style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600, color: '#15113C' }}
                               >
-                                {card.ctaLabel}
-                              </button>
-                            )}
+                                {card.title}
+                              </p>
+                              <p
+                                className="text-xs mb-3"
+                                style={{ fontFamily: 'Inter, sans-serif', color: '#6B7280', lineHeight: 1.55 }}
+                              >
+                                {card.description}
+                              </p>
+                              {card.ctaLabel && card.ctaAction && (
+                                <button
+                                  onClick={() => {
+                                    setActiveTool(card.ctaAction!);
+                                    setActiveTab('tools');
+                                  }}
+                                  className="w-full py-2.5 rounded-full text-sm transition-all active:scale-95"
+                                  style={{
+                                    background: card.btnColor,
+                                    color: 'white',
+                                    fontFamily: 'Inter, sans-serif',
+                                    fontWeight: 600,
+                                  }}
+                                >
+                                  {card.ctaLabel}
+                                </button>
+                              )}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -1122,6 +1224,14 @@ export function ConversationalChat({ oracleName, userName, completedActivity }: 
           }}
         >
           <div className="max-w-2xl mx-auto">
+            {/* Data-safe line */}
+            <div className="flex items-center justify-center gap-1.5 mb-2">
+              <ShieldCheck className="w-3 h-3" style={{ color: "#9CA3AF", strokeWidth: 1.75 }} />
+              <span style={{ fontFamily: "Inter, sans-serif", fontSize: "11px", color: "#9CA3AF" }}>
+                Private &amp; encrypted &middot; Your data is never shared
+              </span>
+            </div>
+
             {/* Voice Wave or Mic Button */}
             <div className="flex items-center justify-center mb-3">
               {isListening ? (
@@ -1243,7 +1353,7 @@ export function ConversationalChat({ oracleName, userName, completedActivity }: 
   if (activeTab === "activities") {
     return (
       <>
-        <EnhancedHomeScreen userName={userName} oracleName={oracleName} />
+        <EnhancedHomeScreen userName={userName} oracleName={oracleName} onOpenNotifications={() => { setShowNotifications(true); setActiveTab("profile"); setNotifUnreadCount(0); }} notifUnreadCount={notifUnreadCount} />
         <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
       </>
     );
@@ -1295,7 +1405,7 @@ export function ConversationalChat({ oracleName, userName, completedActivity }: 
 
     return (
       <>
-        <InsightsScreen onViewBurnoutAnalytics={() => setShowBurnoutAnalytics(true)} />
+        <InsightsScreen onViewBurnoutAnalytics={() => setShowBurnoutAnalytics(true)} onOpenNotifications={() => { setShowNotifications(true); setActiveTab("profile"); setNotifUnreadCount(0); }} notifUnreadCount={notifUnreadCount} />
         <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
       </>
     );
@@ -1431,12 +1541,26 @@ export function ConversationalChat({ oracleName, userName, completedActivity }: 
     if (activeTool === "grounding") return <CrisisGroundingScreen onDone={closeTool} />;
     if (activeTool === "sleep") return <SleepRitualScreen onDone={closeTool} />;
     if (activeTool === "crisis") return <CrisisGroundingScreen onDone={closeTool} />;
+    if (activeTool === "gratitude-assess") return <GratitudeAssessmentScreen onDone={closeTool} />;
+    if (activeTool === "anxiety-assess") return <AnxietyAssessmentScreen onDone={closeTool} />;
+    if (activeTool === "trauma-assess") return <TraumaAssessmentScreen onDone={closeTool} />;
+    if (activeTool === "burnout-bat") return <BurnoutBATScreen onDone={closeTool} />;
+    if (activeTool === "gad7") return <GAD7Screen onDone={closeTool} />;
+    if (activeTool === "dass") return <DASSScreen onDone={closeTool} />;
+    if (activeTool === "grat") return <GRATScreen onDone={closeTool} />;
+    if (activeTool === "olbi") return <OLBIScreen onDone={closeTool} />;
+    if (activeTool === "cbi") return <CBIScreen onDone={closeTool} />;
+    if (activeTool === "ace") return <ACEScreen onDone={closeTool} />;
+    if (activeTool === "siboq") return <SIBOQScreen onDone={closeTool} />;
+    if (activeTool === "rbst") return <RBSTScreen onDone={closeTool} />;
 
     return (
       <>
         <ToolsScreen
           onNavigateToGames={() => setShowGamesHub(true)}
           onSelectTool={(toolId) => setActiveTool(toolId)}
+          onOpenNotifications={() => { setShowNotifications(true); setActiveTab("profile"); setNotifUnreadCount(0); }}
+          notifUnreadCount={notifUnreadCount}
         />
         <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
       </>
@@ -1444,9 +1568,16 @@ export function ConversationalChat({ oracleName, userName, completedActivity }: 
   }
   
   if (activeTab === "profile") {
+    if (showNotifications) {
+      return <NotificationsScreen onBack={() => setShowNotifications(false)} />;
+    }
     return (
       <>
-        <ProfileScreen userName={userName} oracleName={oracleName} />
+        <ProfileScreen
+          userName={userName}
+          oracleName={oracleName}
+          onOpenNotifications={() => setShowNotifications(true)}
+        />
         <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
       </>
     );

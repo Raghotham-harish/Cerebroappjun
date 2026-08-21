@@ -29,7 +29,7 @@ export function SplashScreen({ onComplete, duration = 3000 }: SplashScreenProps)
     <div
       className="fixed inset-0 z-50 flex items-center justify-center"
       style={{
-        background: 'linear-gradient(135deg, #FAF5FF 0%, #EDE9FE 50%, #E0E7FF 100%)',
+        background: 'linear-gradient(180deg, #EDE9FE 0%, #F5F3FF 100%)',
         opacity: fadeOut ? 0 : 1,
         transition: 'opacity 500ms ease-out'
       }}

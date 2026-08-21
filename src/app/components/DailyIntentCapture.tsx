@@ -142,7 +142,7 @@ export function DailyIntentCapture({ userName, onComplete }: DailyIntentCaptureP
     <div
       className="h-screen flex flex-col overflow-hidden"
       style={{
-        background: 'linear-gradient(135deg, #FAF5FF 0%, #EDE9FE 50%, #EBF8FF 100%)'
+        background: 'linear-gradient(180deg, #EDE9FE 0%, #F5F3FF 100%)'
       }}
     >
       {/* Logo Header */}
@@ -236,7 +236,7 @@ export function DailyIntentCapture({ userName, onComplete }: DailyIntentCaptureP
                     onClick={() => handleToggleCard(card.text)}
                     className="p-4 rounded-3xl text-center transition-all relative"
                     style={{
-                      background: selected ? currentCategory.bgColor : 'white',
+                      background: selected ? currentCategory.bgColor : 'rgba(255,255,255,0.88)',
                       border: `2px solid ${selected ? currentCategory.color : '#E5E7EB'}`
                     }}
                   >
@@ -322,8 +322,8 @@ export function DailyIntentCapture({ userName, onComplete }: DailyIntentCaptureP
                 onClick={handleBack}
                 className="px-6 py-4 rounded-full flex items-center gap-2 transition-all"
                 style={{
-                  background: 'white',
-                  border: '2px solid #E5E7EB',
+                  background: 'rgba(255,255,255,0.88)',
+                  border: '1.5px solid #E5E7EB',
                   color: '#6B7280',
                   fontFamily: 'Inter, sans-serif',
                   fontWeight: 600,

@@ -168,7 +168,7 @@ export function InsightReelScreen({
                   className="inline-block px-5 py-2.5 rounded-full"
                   style={{
                     background: 'linear-gradient(135deg, #DDD6FE 0%, #C4B5FD 100%)',
-                    color: '#5B21B6',
+                    color: '#8B5CF6',
                     fontFamily: 'Inter, sans-serif',
                     fontSize: '13px',
                     fontWeight: 600

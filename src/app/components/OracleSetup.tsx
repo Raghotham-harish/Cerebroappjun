@@ -481,7 +481,7 @@ export function OracleSetup({ userName, onComplete, permissionGranted, onPermiss
                 }}
               >
                 {speakerEnabled ? (
-                  <Volume2 className="w-5 h-5" style={{ color: '#6366F1' }} />
+                  <Volume2 className="w-5 h-5" style={{ color: '#8B5CF6' }} />
                 ) : (
                   <VolumeX className="w-5 h-5" style={{ color: '#9CA3AF' }} />
                 )}
@@ -504,7 +504,7 @@ export function OracleSetup({ userName, onComplete, permissionGranted, onPermiss
                 }}
               >
                 {micEnabled ? (
-                  <Mic className="w-5 h-5" style={{ color: '#6366F1' }} />
+                  <Mic className="w-5 h-5" style={{ color: '#8B5CF6' }} />
                 ) : (
                   <MicOff className="w-5 h-5" style={{ color: '#9CA3AF' }} />
                 )}

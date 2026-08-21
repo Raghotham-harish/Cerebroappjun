@@ -1,12 +1,37 @@
-import { Wind, BookOpen, Heart, CheckSquare, Calendar, BookHeart, ArrowRight, Flame, Zap, MessageCircle, Frown, Smile, CloudRain, Sparkles, Users, Shield, TrendingUp, AlertCircle } from "lucide-react";
+import { Wind, BookOpen, Heart, CheckSquare, Calendar, BookHeart, ArrowRight, Flame, Zap, MessageCircle, Frown, Smile, CloudRain, Sparkles, Users, Shield, TrendingUp, AlertCircle, Bell } from "lucide-react";
 import { AnimatedLogo } from "./AnimatedLogo";
 
 interface EnhancedHomeScreenProps {
   userName: string;
   oracleName: string;
+  onOpenNotifications?: () => void;
+  notifUnreadCount?: number;
 }
 
-export function EnhancedHomeScreen({ userName, oracleName }: EnhancedHomeScreenProps) {
+function BellButton({ count = 0, onClick }: { count?: number; onClick?: () => void }) {
+  return (
+    <div className="relative">
+      <button
+        onClick={onClick}
+        className="w-11 h-11 rounded-2xl flex items-center justify-center transition-all active:scale-90"
+        style={{ background: "rgba(255,255,255,0.85)", border: "1.5px solid rgba(139,92,246,0.18)" }}
+        aria-label="Notifications"
+      >
+        <Bell className="w-5 h-5" style={{ color: "#15113C", strokeWidth: 1.75 }} />
+      </button>
+      {count > 0 && (
+        <div
+          className="absolute -top-1 -right-1 flex items-center justify-center rounded-full"
+          style={{ minWidth: 17, height: 17, background: "#8B5CF6", fontFamily: "Inter", fontWeight: 700, fontSize: "9px", color: "white", paddingLeft: 3, paddingRight: 3 }}
+        >
+          {count}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function EnhancedHomeScreen({ userName, oracleName, onOpenNotifications, notifUnreadCount = 0 }: EnhancedHomeScreenProps) {
   const practices = [
     { name: "Breathe", time: "5 min", gradient: "linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%)", icon: Wind },
     { name: "Reflect", time: "10 min", gradient: "linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%)", icon: BookOpen },
@@ -28,7 +53,7 @@ export function EnhancedHomeScreen({ userName, oracleName }: EnhancedHomeScreenP
     <div 
       className="min-h-screen pb-32"
       style={{ 
-        background: 'linear-gradient(180deg, #FAF9F7 0%, #FFFFFF 100%)',
+        background: 'linear-gradient(180deg, #EDE9FE 0%, #F5F3FF 100%)',
         padding: '16px',
         paddingBottom: '128px'
       }}
@@ -60,6 +85,7 @@ export function EnhancedHomeScreen({ userName, oracleName }: EnhancedHomeScreenP
             </h1>
           </div>
         </div>
+        <BellButton count={notifUnreadCount} onClick={onOpenNotifications} />
       </div>
 
       {/* Streak + XP */}
@@ -208,8 +234,8 @@ export function EnhancedHomeScreen({ userName, oracleName }: EnhancedHomeScreenP
       <div 
         className="p-5 rounded-3xl mb-4"
         style={{
-          background: 'white',
-          border: '2px solid #F3F4F6'
+          background: 'rgba(255,255,255,0.88)',
+          border: '1.5px solid rgba(139,92,246,0.10)'
         }}
       >
         <div className="flex items-center justify-between mb-4">
@@ -223,11 +249,11 @@ export function EnhancedHomeScreen({ userName, oracleName }: EnhancedHomeScreenP
           >
             HOW ARE YOU RIGHT NOW?
           </p>
-          <button 
+          <button
             className="text-xs flex items-center gap-1"
-            style={{ 
+            style={{
               fontFamily: 'Inter, sans-serif',
-              color: '#6366F1',
+              color: '#7C3AED',
               fontWeight: 500
             }}
           >
@@ -272,7 +298,7 @@ export function EnhancedHomeScreen({ userName, oracleName }: EnhancedHomeScreenP
                     fontFamily: 'Inter, sans-serif',
                     color: i === 3 ? '#8B5CF6' : '#71717A', // Changed from #9CA3AF for better contrast
                     fontWeight: 600,
-                    fontSize: '9px'
+                    fontSize: '11px'
                   }}
                 >
                   {mood}
@@ -287,8 +313,8 @@ export function EnhancedHomeScreen({ userName, oracleName }: EnhancedHomeScreenP
       <div 
         className="p-5 rounded-3xl mb-4"
         style={{
-          background: 'white',
-          border: '2px solid #F3F4F6'
+          background: 'rgba(255,255,255,0.88)',
+          border: '1.5px solid rgba(139,92,246,0.10)'
         }}
       >
         <div className="flex items-center justify-between mb-4">
@@ -302,11 +328,11 @@ export function EnhancedHomeScreen({ userName, oracleName }: EnhancedHomeScreenP
           >
             EMOTION TRENDS · 7D
           </p>
-          <button 
+          <button
             className="text-xs"
-            style={{ 
+            style={{
               fontFamily: 'Inter, sans-serif',
-              color: '#6366F1',
+              color: '#7C3AED',
               fontWeight: 500
             }}
           >
@@ -335,7 +361,7 @@ export function EnhancedHomeScreen({ userName, oracleName }: EnhancedHomeScreenP
                     className="w-6 h-6 rounded-lg flex items-center justify-center"
                     style={{ background: emotion.iconBg }}
                   >
-                    <emotion.icon className="w-3.5 h-3.5" style={{ color: '#15113C', strokeWidth: 2.5 }} />
+                    <emotion.icon className="w-3.5 h-3.5" style={{ color: '#15113C', strokeWidth: 1.75 }} />
                   </div>
                   <span
                     className="text-sm"
@@ -406,7 +432,7 @@ export function EnhancedHomeScreen({ userName, oracleName }: EnhancedHomeScreenP
                 className="w-8 h-8 rounded-xl mb-auto flex items-center justify-center"
                 style={{ background: 'rgba(255,255,255,0.5)' }}
               >
-                <practice.icon className="w-4 h-4" style={{ color: '#15113C', strokeWidth: 2.5 }} />
+                <practice.icon className="w-4 h-4" style={{ color: '#15113C', strokeWidth: 1.75 }} />
               </div>
               <div>
                 <p 
@@ -448,11 +474,11 @@ export function EnhancedHomeScreen({ userName, oracleName }: EnhancedHomeScreenP
           >
             TRIGGERED MICRO ACTIVITIES
           </p>
-          <button 
+          <button
             className="text-xs flex items-center gap-1"
-            style={{ 
+            style={{
               fontFamily: 'Inter, sans-serif',
-              color: '#6366F1',
+              color: '#7C3AED',
               fontWeight: 500
             }}
           >
@@ -474,7 +500,7 @@ export function EnhancedHomeScreen({ userName, oracleName }: EnhancedHomeScreenP
                 className="w-8 h-8 rounded-xl mb-3 flex items-center justify-center"
                 style={{ background: 'rgba(255,255,255,0.5)' }}
               >
-                <activity.icon className="w-4 h-4" style={{ color: '#15113C', strokeWidth: 2.5 }} />
+                <activity.icon className="w-4 h-4" style={{ color: '#15113C', strokeWidth: 1.75 }} />
               </div>
               <p 
                 className="text-sm mb-1"
@@ -514,8 +540,8 @@ export function EnhancedHomeScreen({ userName, oracleName }: EnhancedHomeScreenP
       <div 
         className="p-5 rounded-3xl"
         style={{
-          background: 'white',
-          border: '2px solid #F3F4F6'
+          background: 'rgba(255,255,255,0.88)',
+          border: '1.5px solid rgba(139,92,246,0.10)'
         }}
       >
         <div className="flex items-center justify-between mb-3">
@@ -529,11 +555,11 @@ export function EnhancedHomeScreen({ userName, oracleName }: EnhancedHomeScreenP
           >
             ACT OF WILL · STAGE 3
           </p>
-          <button 
+          <button
             className="text-xs"
-            style={{ 
+            style={{
               fontFamily: 'Inter, sans-serif',
-              color: '#6366F1',
+              color: '#7C3AED',
               fontWeight: 500
             }}
           >

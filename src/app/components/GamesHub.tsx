@@ -210,7 +210,7 @@ export function GamesHub({ onSelectGame }: GamesHubProps) {
     <div
       className="min-h-screen pb-32"
       style={{
-        background: 'linear-gradient(180deg, #FAF9F7 0%, #FFFFFF 100%)',
+        background: 'linear-gradient(180deg, #EDE9FE 0%, #F5F3FF 100%)',
         padding: '16px',
         paddingBottom: '128px'
       }}
@@ -302,7 +302,7 @@ export function GamesHub({ onSelectGame }: GamesHubProps) {
                   onClick={() => onSelectGame(game.id)}
                   className="text-left rounded-3xl overflow-hidden transition-all active:scale-95"
                   style={{
-                    background: 'white',
+                    background: 'rgba(255,255,255,0.88)',
                     border: `2px solid ${category.color}20`
                   }}
                 >

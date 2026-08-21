@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowLeft, Check, RefreshCw, Mic, MicOff, Heart } from "lucide-react";
+import { ArrowLeft, RefreshCw, Mic, MicOff, Heart } from "lucide-react";
 
 function speakText(text: string) {
   if (!("speechSynthesis" in window)) return;
@@ -24,6 +24,8 @@ const promptSets = [
 const PURPLE = "#8B5CF6";
 const PAGE_BG = "linear-gradient(180deg, #EDE9FE 0%, #F5F3FF 100%)";
 const DONE_BG = "linear-gradient(135deg, #EDE9FE 0%, #C4B5FD 100%)";
+
+const promptLabels = ["First", "Second", "Third"];
 
 export function GratitudeJournalScreen({ onDone }: GratitudeJournalScreenProps) {
   const [promptSetIdx, setPromptSetIdx] = useState(0);
@@ -52,13 +54,13 @@ export function GratitudeJournalScreen({ onDone }: GratitudeJournalScreenProps) 
   if (submitted) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center px-6" style={{ background: DONE_BG }}>
-        <div className="w-20 h-20 rounded-full flex items-center justify-center mb-6" style={{ background: PURPLE }}>
+        <div className="w-20 h-20 rounded-full flex items-center justify-center mb-6" style={{ background: "#8B5CF6" }}>
           <Heart className="w-10 h-10" style={{ color: "white", strokeWidth: 1.5 }} />
         </div>
         <h2 className="text-2xl mb-3 text-center" style={{ fontFamily: "Lora, serif", fontWeight: 500, color: "#15113C" }}>
           Thank you for noticing
         </h2>
-        <p className="text-sm mb-10 text-center max-w-xs" style={{ fontFamily: "Inter, sans-serif", color: "#4C1D95", lineHeight: 1.6 }}>
+        <p className="text-sm mb-10 text-center max-w-xs" style={{ fontFamily: "Inter, sans-serif", color: "#4B5563", lineHeight: 1.6 }}>
           Gratitude rewires the brain toward abundance. Come back tomorrow.
         </p>
         <button onClick={onDone} className="cb-btn-primary" style={{ maxWidth: "240px" }}>
@@ -70,47 +72,77 @@ export function GratitudeJournalScreen({ onDone }: GratitudeJournalScreenProps) 
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: PAGE_BG, padding: "16px", paddingBottom: "40px" }}>
-      <div className="flex items-center justify-between pt-8 pb-6">
+      {/* Header */}
+      <div className="flex items-center justify-between pt-8 pb-2">
         <div className="flex items-center gap-3">
-          <button onClick={onDone} className="cb-btn-icon">
+          <button onClick={onDone} className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.7)", border: "1.5px solid rgba(0,0,0,0.07)" }}>
             <ArrowLeft className="w-5 h-5" style={{ color: "#15113C" }} />
           </button>
           <div>
             <h1 className="text-2xl" style={{ fontFamily: "Lora, serif", fontWeight: 500, color: "#15113C" }}>Gratitude Journal</h1>
-            <p className="text-xs" style={{ fontFamily: "Inter, sans-serif", color: "#9CA3AF" }}>Daily anchoring practice</p>
+            <p className="text-xs" style={{ fontFamily: "Inter, sans-serif", color: "#6B7280" }}>Daily anchoring practice</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={toggleVoice} className="cb-btn-icon" style={{ background: voiceOn ? "#EDE9FE" : "rgba(255,255,255,0.7)", border: voiceOn ? "1.5px solid #C4B5FD" : "1.5px solid rgba(0,0,0,0.08)" }}>
-            {voiceOn ? <Mic className="w-4 h-4" style={{ color: PURPLE }} /> : <MicOff className="w-4 h-4" style={{ color: "#9CA3AF" }} />}
+          <button onClick={toggleVoice} className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: voiceOn ? "#EDE9FE" : "rgba(255,255,255,0.7)", border: voiceOn ? "1.5px solid #8B5CF6" : "1.5px solid rgba(0,0,0,0.07)" }}>
+            {voiceOn ? <Mic className="w-4 h-4" style={{ color: "#7C3AED" }} /> : <MicOff className="w-4 h-4" style={{ color: "#15113C" }} />}
           </button>
-          <button onClick={shufflePrompts} className="cb-btn-icon">
-            <RefreshCw className="w-4 h-4" style={{ color: "#6B7280" }} />
+          <button onClick={shufflePrompts} className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.7)", border: "1.5px solid rgba(0,0,0,0.07)" }}>
+            <RefreshCw className="w-4 h-4" style={{ color: "#15113C" }} />
           </button>
         </div>
       </div>
 
+      {/* Decorative strip */}
+      <div className="flex items-center gap-2 mb-5 mt-4 px-1">
+        <div className="h-px flex-1" style={{ background: "linear-gradient(to right, #FDE68A, transparent)" }} />
+        <span className="text-xs" style={{ fontFamily: "Inter, sans-serif", color: "#D97706", fontWeight: 600, letterSpacing: "0.08em" }}>TODAY'S PROMPTS</span>
+        <div className="h-px flex-1" style={{ background: "linear-gradient(to left, #FDE68A, transparent)" }} />
+      </div>
+
       <div className="space-y-4 flex-1">
         {prompts.map((prompt, i) => (
-          <div key={i} className="p-5 rounded-3xl" style={{ background: "rgba(255,255,255,0.8)", border: "1.5px solid rgba(139,92,246,0.15)" }}>
-            <p className="text-sm mb-3" style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, color: "#4C1D95" }}>
-              {i + 1}. {prompt}
-            </p>
-            <textarea
-              value={answers[i]}
-              onChange={(e) => { const u = [...answers]; u[i] = e.target.value; setAnswers(u); }}
-              placeholder="Write freely…"
-              rows={3}
-              className="w-full px-4 py-3 rounded-2xl text-sm resize-none focus:outline-none"
-              style={{ fontFamily: "Inter, sans-serif", color: "#15113C", background: "white", border: "1.5px solid rgba(139,92,246,0.2)" }}
-            />
+          <div
+            key={i}
+            className="rounded-3xl overflow-hidden"
+            style={{ background: "rgba(255,255,255,0.88)", border: "1.5px solid rgba(217,119,6,0.18)", boxShadow: "0 2px 12px rgba(217,119,6,0.07)" }}
+          >
+            {/* Prompt label band */}
+            <div className="px-5 py-3 flex items-center gap-2" style={{ background: "rgba(253,230,138,0.35)", borderBottom: "1px solid rgba(217,119,6,0.12)" }}>
+              <div className="w-5 h-5 rounded-full flex items-center justify-center" style={{ background: "#D97706" }}>
+                <span style={{ fontFamily: "Inter, sans-serif", fontSize: 10, color: "white", fontWeight: 700 }}>{i + 1}</span>
+              </div>
+              <p className="text-sm flex-1" style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, color: "#78350F" }}>
+                {prompt}
+              </p>
+            </div>
+            {/* Textarea */}
+            <div className="p-4">
+              <textarea
+                value={answers[i]}
+                onChange={(e) => { const u = [...answers]; u[i] = e.target.value; setAnswers(u); }}
+                placeholder="Write freely…"
+                rows={3}
+                className="w-full px-3 py-2.5 rounded-2xl text-sm resize-none focus:outline-none"
+                style={{ fontFamily: "Inter, sans-serif", fontStyle: answers[i] ? "normal" : "italic", color: "#15113C", background: "rgba(255,251,235,0.8)", border: "1.5px solid rgba(217,119,6,0.15)" }}
+              />
+            </div>
           </div>
         ))}
       </div>
 
       <button
         onClick={handleSubmit}
-        className="cb-btn-primary mt-6"
+        className="mt-6 w-full py-4 rounded-full text-sm font-semibold transition-all"
+        style={{
+          fontFamily: "Inter, sans-serif",
+          fontWeight: 700,
+          fontSize: "15px",
+          background: answers.some(a => a.trim()) ? "linear-gradient(135deg, #F59E0B 0%, #D97706 100%)" : "#F3F4F6",
+          color: answers.some(a => a.trim()) ? "white" : "#9CA3AF",
+          cursor: answers.some(a => a.trim()) ? "pointer" : "not-allowed",
+          boxShadow: answers.some(a => a.trim()) ? "0 4px 20px rgba(217,119,6,0.3)" : "none",
+        }}
       >
         Save entry
       </button>

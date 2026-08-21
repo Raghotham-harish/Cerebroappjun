@@ -246,7 +246,7 @@ export function PersonalLeaderboard({ userName, intents, onGetStarted }: Persona
               <div className="flex items-end gap-2">
                 {pillars.map(p => (
                   <div key={p.id} className="flex flex-col items-center gap-1">
-                    <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', color: p.color, fontWeight: 600 }}>
+                    <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '10px', color: p.color, fontWeight: 600 }}>
                       {p.progress}%
                     </span>
                     <div

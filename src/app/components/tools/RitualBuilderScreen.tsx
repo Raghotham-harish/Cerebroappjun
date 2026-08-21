@@ -73,7 +73,7 @@ export function RitualBuilderScreen({ onDone }: RitualBuilderScreenProps) {
             <h1 className="text-2xl" style={{ fontFamily: "Lora, serif", fontWeight: 500, color: "#15113C" }}>
               {type === "morning" ? "Morning" : "Evening"} Ritual
             </h1>
-            <p className="text-xs" style={{ fontFamily: "Inter, sans-serif", color: "#9CA3AF" }}>Tap ✕ to remove a step</p>
+            <p className="text-xs" style={{ fontFamily: "Inter, sans-serif", color: "#9CA3AF" }}>Tap X to remove a step</p>
           </div>
         </div>
 

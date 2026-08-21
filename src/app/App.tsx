@@ -17,10 +17,11 @@ import { BurnoutResult } from "./components/BurnoutResult";
 import { CoachBooking } from "./components/CoachBooking";
 import { SplashScreen } from "./components/SplashScreen";
 import { PsychologicalProfileFlow, ProfileData } from "./components/PsychologicalProfileFlow";
+import { ConsentModal } from "./components/ConsentModal";
 import { PointsProvider, usePoints } from "./contexts/PointsContext";
 import { BurnoutProvider } from "./contexts/BurnoutContext";
 
-type AppState = "splash" | "login" | "userInfo" | "oracleSetup" | "companySelection" | "psychologicalProfile" | "dailyIntent" | "personalLeaderboard" | "progression" | "rewards" | "lifeSatisfaction" | "zow" | "home" | "chat" | "burnoutAssessment" | "burnoutResult" | "coachBooking";
+type AppState = "splash" | "login" | "consent1" | "consent2" | "userInfo" | "oracleSetup" | "companySelection" | "psychologicalProfile" | "dailyIntent" | "personalLeaderboard" | "progression" | "rewards" | "lifeSatisfaction" | "zow" | "home" | "chat" | "burnoutAssessment" | "burnoutResult" | "coachBooking";
 
 interface UserInfo {
   name: string;
@@ -50,6 +51,14 @@ function AppContent() {
   };
 
   const handleLogin = () => {
+    setAppState("consent1");
+  };
+
+  const handleConsent1 = () => {
+    setAppState("consent2");
+  };
+
+  const handleConsent2 = () => {
     setAppState("userInfo");
   };
 
@@ -147,6 +156,8 @@ function AppContent() {
     <>
       {appState === "splash" && <SplashScreen onComplete={handleSplashComplete} />}
       {appState === "login" && <LoginScreen onLogin={handleLogin} />}
+      {appState === "consent1" && <ConsentModal variant="disclaimer" onAccept={handleConsent1} />}
+      {appState === "consent2" && <ConsentModal variant="privacy" onAccept={handleConsent2} />}
       {appState === "userInfo" && (
         <UserInfoCapture 
           onComplete={handleUserInfoComplete} 
