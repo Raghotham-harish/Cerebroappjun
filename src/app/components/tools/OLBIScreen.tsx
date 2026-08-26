@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ArrowLeft, Flame, Check } from "lucide-react";
+import { AssessmentActionItems, AssessmentSeverity } from "../AssessmentActionItems";
 
 // ── Design tokens ────────────────────────────────────────────────────────────
 const PAGE_BG = "linear-gradient(180deg, #EDE9FE 0%, #F5F3FF 100%)";
@@ -117,12 +118,14 @@ function getOverallBand(avg: number): OverallBand {
 // ── Props ─────────────────────────────────────────────────────────────────────
 interface OLBIScreenProps {
   onDone: () => void;
+  onStartTool?: (toolId: string) => void;
+  onOpenChatWithPrompt?: (prompt: string) => void;
 }
 
 type ScreenView = "intro" | "question" | "result";
 
 // ── Component ─────────────────────────────────────────────────────────────────
-export function OLBIScreen({ onDone }: OLBIScreenProps) {
+export function OLBIScreen({ onDone, onStartTool, onOpenChatWithPrompt }: OLBIScreenProps) {
   const [view, setView] = useState<ScreenView>("intro");
   const [currentQ, setCurrentQ] = useState(0);
   const [answers, setAnswers] = useState<(number | null)[]>(Array(TOTAL).fill(null));
@@ -535,218 +538,52 @@ export function OLBIScreen({ onDone }: OLBIScreenProps) {
   const exhaustionAvg = computeSubscaleAverage(answers, "E");
   const disengagementAvg = computeSubscaleAverage(answers, "D");
   const overallAvg = (exhaustionAvg + disengagementAvg) / 2;
-
-  const eBand = getSubBand(exhaustionAvg);
-  const dBand = getSubBand(disengagementAvg);
   const overall = getOverallBand(overallAvg);
+  const severity: AssessmentSeverity =
+    overall.label === "Resilient" ? "positive" :
+    overall.label === "Fatigued" ? "mild" : "high";
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: DONE_BG,
-        display: "flex",
-        flexDirection: "column",
-        padding: "24px 20px 40px",
-        fontFamily: "Inter, sans-serif",
-      }}
-    >
+    <div className="min-h-screen flex flex-col px-5 pt-14 pb-10" style={{ background: DONE_BG }}>
       {/* Header */}
-      <h2
-        style={{
-          fontFamily: "Lora, serif",
-          fontSize: 22,
-          fontWeight: 700,
-          color: "#15113C",
-          textAlign: "center",
-          marginBottom: 4,
-        }}
-      >
-        Your Results
-      </h2>
-      <p style={{ fontSize: 13, color: "#6B7280", textAlign: "center", marginBottom: 28 }}>
-        Oldenburg Burnout Inventory
-      </p>
-
-      {/* Score ring */}
-      <div style={{ display: "flex", justifyContent: "center", marginBottom: 20 }}>
-        <div
-          style={{
-            width: 120,
-            height: 120,
-            borderRadius: "50%",
-            background: "linear-gradient(135deg, #A78BFA 0%, #7C3AED 100%)",
-            boxShadow: "0 8px 24px rgba(124,58,237,0.35)",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <span style={{ fontSize: 30, fontWeight: 800, color: "white", fontFamily: "Lora, serif" }}>
-            {overallAvg.toFixed(1)}
-          </span>
-          <span style={{ fontSize: 11, color: "rgba(255,255,255,0.8)" }}>/ 4.0</span>
-        </div>
-      </div>
-
-      {/* Overall band chip */}
-      <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}>
-        <span
-          style={{
-            padding: "6px 16px",
-            borderRadius: 20,
-            background: overall.bg,
-            color: overall.color,
-            fontSize: 13,
-            fontWeight: 700,
-          }}
-        >
-          {overall.label}
+      <div className="flex justify-between items-center mb-8">
+        <button onClick={onDone} className="w-11 h-11 rounded-2xl flex items-center justify-center"
+          style={{ background: "rgba(255,255,255,0.88)", border: "1.5px solid rgba(139,92,246,0.15)" }} aria-label="Close">
+          <ArrowLeft className="w-5 h-5" style={{ color: "#15113C", strokeWidth: 1.75 }} />
+        </button>
+        <span style={{ fontFamily: "Inter, sans-serif", fontSize: 13, fontWeight: 600, color: "#9CA3AF" }}>
+          Oldenburg Burnout Inventory Complete
         </span>
+        <div style={{ width: 44 }} />
       </div>
 
-      {/* Overall insight */}
-      <p
-        style={{
-          fontSize: 14,
-          color: "#4B5563",
-          textAlign: "center",
-          lineHeight: 1.6,
-          maxWidth: 320,
-          margin: "0 auto 24px",
-        }}
-      >
-        {overall.insight}
-      </p>
-
-      {/* Subscale cards */}
-      <div style={{ display: "flex", gap: 12, marginBottom: 20 }}>
-        {/* Exhaustion */}
-        <div
-          style={{
-            flex: 1,
-            borderRadius: 18,
-            background: "rgba(255,255,255,0.85)",
-            padding: "16px",
-            textAlign: "center",
-          }}
-        >
-          <p style={{ fontSize: 11, color: "#6B7280", fontWeight: 600, marginBottom: 10 }}>Exhaustion</p>
-          <div
-            style={{
-              fontSize: 24,
-              fontWeight: 800,
-              color: "#15113C",
-              fontFamily: "Lora, serif",
-              marginBottom: 8,
-            }}
-          >
-            {exhaustionAvg.toFixed(1)}
-          </div>
-          <span
-            style={{
-              padding: "3px 10px",
-              borderRadius: 12,
-              background: eBand.bg,
-              color: eBand.color,
-              fontSize: 11,
-              fontWeight: 700,
-            }}
-          >
-            {eBand.label}
-          </span>
+      {/* Check circle */}
+      <div className="flex flex-col items-center mb-8">
+        <div style={{ width: 80, height: 80, borderRadius: "50%", background: "linear-gradient(135deg, #A78BFA 0%, #8B5CF6 100%)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 8px 24px rgba(139,92,246,0.3)", marginBottom: 16 }}>
+          <Check className="w-9 h-9" style={{ color: "white", strokeWidth: 1.75 }} />
         </div>
-
-        {/* Disengagement */}
-        <div
-          style={{
-            flex: 1,
-            borderRadius: 18,
-            background: "rgba(255,255,255,0.85)",
-            padding: "16px",
-            textAlign: "center",
-          }}
-        >
-          <p style={{ fontSize: 11, color: "#6B7280", fontWeight: 600, marginBottom: 10 }}>Disengagement</p>
-          <div
-            style={{
-              fontSize: 24,
-              fontWeight: 800,
-              color: "#15113C",
-              fontFamily: "Lora, serif",
-              marginBottom: 8,
-            }}
-          >
-            {disengagementAvg.toFixed(1)}
-          </div>
-          <span
-            style={{
-              padding: "3px 10px",
-              borderRadius: 12,
-              background: dBand.bg,
-              color: dBand.color,
-              fontSize: 11,
-              fontWeight: 700,
-            }}
-          >
-            {dBand.label}
-          </span>
-        </div>
+        <h2 style={{ fontFamily: "Lora, serif", fontSize: 22, fontWeight: 500, color: "#15113C", textAlign: "center", marginBottom: 6 }}>
+          Assessment complete
+        </h2>
+        <p style={{ fontFamily: "Inter, sans-serif", fontSize: 13, color: "#6B7280", textAlign: "center", maxWidth: 280 }}>
+          {overall.insight}
+        </p>
       </div>
 
-      {/* Suggested action */}
-      <div
-        style={{
-          borderRadius: 20,
-          background: "rgba(255,255,255,0.85)",
-          padding: "20px",
-          display: "flex",
-          gap: 14,
-          alignItems: "flex-start",
-          marginBottom: 28,
-        }}
-      >
-        <div
-          style={{
-            width: 40,
-            height: 40,
-            borderRadius: 12,
-            background: ORANGE_LIGHT,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexShrink: 0,
-          }}
-        >
-          <Check className="w-5 h-5" style={{ color: ICON_COLOR, strokeWidth: 1.75 }} />
-        </div>
-        <div>
-          <p style={{ fontSize: 12, fontWeight: 700, color: "#15113C", marginBottom: 4 }}>
-            Suggested Next Step
-          </p>
-          <p style={{ fontSize: 13, color: "#4B5563", lineHeight: 1.6, margin: 0 }}>
-            {overall.action}
-          </p>
-        </div>
-      </div>
+      {/* Action items */}
+      <AssessmentActionItems
+        assessmentId="olbi"
+        severity={severity}
+        severityLabel={overall.label}
+        severityColor={overall.color}
+        severityBg={overall.bg}
+        onStartTool={(id) => { onDone(); setTimeout(() => onStartTool?.(id), 100); }}
+        onOpenChat={(prompt) => onOpenChatWithPrompt?.(prompt)}
+      />
 
-      {/* Done */}
-      <button
-        onClick={onDone}
-        style={{
-          width: "100%",
-          padding: "16px",
-          borderRadius: 16,
-          background: PURPLE,
-          color: "white",
-          fontSize: 16,
-          fontWeight: 700,
-          border: "none",
-          cursor: "pointer",
-          fontFamily: "Inter, sans-serif",
-        }}
-      >
+      {/* Done button */}
+      <button onClick={onDone} className="mt-6 w-full py-4 rounded-full"
+        style={{ background: "#8B5CF6", color: "white", fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: 15, border: "none", cursor: "pointer" }}>
         Done
       </button>
     </div>

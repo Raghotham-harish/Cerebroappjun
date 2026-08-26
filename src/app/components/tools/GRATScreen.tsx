@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ArrowLeft, Heart, Check } from "lucide-react";
+import { AssessmentActionItems, AssessmentSeverity } from "../AssessmentActionItems";
 
 // ── Design tokens ────────────────────────────────────────────────────────────
 const PAGE_BG = "linear-gradient(180deg, #EDE9FE 0%, #F5F3FF 100%)";
@@ -103,12 +104,14 @@ function getBand(total: number): Band {
 // ── Props ─────────────────────────────────────────────────────────────────────
 interface GRATScreenProps {
   onDone: () => void;
+  onStartTool?: (toolId: string) => void;
+  onOpenChatWithPrompt?: (prompt: string) => void;
 }
 
 type ScreenView = "intro" | "question" | "result";
 
 // ── Component ─────────────────────────────────────────────────────────────────
-export function GRATScreen({ onDone }: GRATScreenProps) {
+export function GRATScreen({ onDone, onStartTool, onOpenChatWithPrompt }: GRATScreenProps) {
   const [view, setView] = useState<ScreenView>("intro");
   const [currentQ, setCurrentQ] = useState(0);
   const [answers, setAnswers] = useState<(number | null)[]>(Array(TOTAL).fill(null));
@@ -515,221 +518,51 @@ export function GRATScreen({ onDone }: GRATScreenProps) {
   // ── Result ─────────────────────────────────────────────────────────────────
   const totalScore = computeScore(answers);
   const band = getBand(totalScore);
-
-  const losdScore = computeFactorScore(answers, LOSD_INDICES);
-  const saScore = computeFactorScore(answers, SA_INDICES);
-  const aoScore = computeFactorScore(answers, AO_INDICES);
-
-  const losdMax = 6 * 9;
-  const saMax = 6 * 9;
-  const aoMax = 4 * 9;
+  const severity: AssessmentSeverity =
+    band.label === "Flourishing" ? "positive" :
+    band.label === "Growing" ? "mild" : "moderate";
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: DONE_BG,
-        display: "flex",
-        flexDirection: "column",
-        padding: "24px 20px 40px",
-        fontFamily: "Inter, sans-serif",
-      }}
-    >
+    <div className="min-h-screen flex flex-col px-5 pt-14 pb-10" style={{ background: DONE_BG }}>
       {/* Header */}
-      <h2
-        style={{
-          fontFamily: "Lora, serif",
-          fontSize: 22,
-          fontWeight: 700,
-          color: "#15113C",
-          textAlign: "center",
-          marginBottom: 4,
-        }}
-      >
-        Your Results
-      </h2>
-      <p style={{ fontSize: 13, color: "#6B7280", textAlign: "center", marginBottom: 28 }}>
-        GRAT-Short Assessment
-      </p>
-
-      {/* Score ring */}
-      <div style={{ display: "flex", justifyContent: "center", marginBottom: 20 }}>
-        <div
-          style={{
-            width: 120,
-            height: 120,
-            borderRadius: "50%",
-            background: "linear-gradient(135deg, #A78BFA 0%, #7C3AED 100%)",
-            boxShadow: "0 8px 24px rgba(124,58,237,0.35)",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <span style={{ fontSize: 32, fontWeight: 800, color: "white", fontFamily: "Lora, serif" }}>
-            {totalScore}
-          </span>
-          <span style={{ fontSize: 11, color: "rgba(255,255,255,0.8)" }}>of 144</span>
-        </div>
-      </div>
-
-      {/* Band chip */}
-      <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}>
-        <span
-          style={{
-            padding: "6px 16px",
-            borderRadius: 20,
-            background: band.bg,
-            color: band.color,
-            fontSize: 13,
-            fontWeight: 700,
-          }}
-        >
-          {band.label}
+      <div className="flex justify-between items-center mb-8">
+        <button onClick={onDone} className="w-11 h-11 rounded-2xl flex items-center justify-center"
+          style={{ background: "rgba(255,255,255,0.88)", border: "1.5px solid rgba(139,92,246,0.15)" }} aria-label="Close">
+          <ArrowLeft className="w-5 h-5" style={{ color: "#15113C", strokeWidth: 1.75 }} />
+        </button>
+        <span style={{ fontFamily: "Inter, sans-serif", fontSize: 13, fontWeight: 600, color: "#9CA3AF" }}>
+          Gratitude &amp; Appreciation Complete
         </span>
+        <div style={{ width: 44 }} />
       </div>
 
-      {/* Insight */}
-      <p
-        style={{
-          fontSize: 14,
-          color: "#4B5563",
-          textAlign: "center",
-          lineHeight: 1.6,
-          maxWidth: 320,
-          margin: "0 auto 28px",
-        }}
-      >
-        {band.insight}
-      </p>
-
-      {/* Factor breakdown */}
-      <div
-        style={{
-          borderRadius: 20,
-          background: "rgba(255,255,255,0.85)",
-          padding: "20px",
-          marginBottom: 20,
-        }}
-      >
-        <p style={{ fontSize: 13, fontWeight: 700, color: "#15113C", marginBottom: 16 }}>Factor Breakdown</p>
-
-        {/* LOSD */}
-        <div style={{ marginBottom: 14 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-            <span style={{ fontSize: 12, color: "#6B7280", fontWeight: 600 }}>
-              Lack of Sense of Deprivation
-            </span>
-            <span style={{ fontSize: 12, color: "#92400E", fontWeight: 700 }}>
-              {losdScore}/{losdMax}
-            </span>
-          </div>
-          <div style={{ height: 6, borderRadius: 3, background: "#E5E7EB", overflow: "hidden" }}>
-            <div
-              style={{
-                height: "100%",
-                width: `${(losdScore / losdMax) * 100}%`,
-                background: AMBER_ACCENT,
-                borderRadius: 3,
-              }}
-            />
-          </div>
+      {/* Check circle */}
+      <div className="flex flex-col items-center mb-8">
+        <div style={{ width: 80, height: 80, borderRadius: "50%", background: "linear-gradient(135deg, #A78BFA 0%, #8B5CF6 100%)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 8px 24px rgba(139,92,246,0.3)", marginBottom: 16 }}>
+          <Check className="w-9 h-9" style={{ color: "white", strokeWidth: 1.75 }} />
         </div>
-
-        {/* SA */}
-        <div style={{ marginBottom: 14 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-            <span style={{ fontSize: 12, color: "#6B7280", fontWeight: 600 }}>Simple Appreciation</span>
-            <span style={{ fontSize: 12, color: "#059669", fontWeight: 700 }}>
-              {saScore}/{saMax}
-            </span>
-          </div>
-          <div style={{ height: 6, borderRadius: 3, background: "#E5E7EB", overflow: "hidden" }}>
-            <div
-              style={{
-                height: "100%",
-                width: `${(saScore / saMax) * 100}%`,
-                background: "#059669",
-                borderRadius: 3,
-              }}
-            />
-          </div>
-        </div>
-
-        {/* AO */}
-        <div>
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-            <span style={{ fontSize: 12, color: "#6B7280", fontWeight: 600 }}>Appreciation for Others</span>
-            <span style={{ fontSize: 12, color: "#7C3AED", fontWeight: 700 }}>
-              {aoScore}/{aoMax}
-            </span>
-          </div>
-          <div style={{ height: 6, borderRadius: 3, background: "#E5E7EB", overflow: "hidden" }}>
-            <div
-              style={{
-                height: "100%",
-                width: `${(aoScore / aoMax) * 100}%`,
-                background: "#7C3AED",
-                borderRadius: 3,
-              }}
-            />
-          </div>
-        </div>
+        <h2 style={{ fontFamily: "Lora, serif", fontSize: 22, fontWeight: 500, color: "#15113C", textAlign: "center", marginBottom: 6 }}>
+          Assessment complete
+        </h2>
+        <p style={{ fontFamily: "Inter, sans-serif", fontSize: 13, color: "#6B7280", textAlign: "center", maxWidth: 280 }}>
+          {band.insight}
+        </p>
       </div>
 
-      {/* Suggested action */}
-      <div
-        style={{
-          borderRadius: 20,
-          background: "rgba(255,255,255,0.85)",
-          padding: "20px",
-          display: "flex",
-          gap: 14,
-          alignItems: "flex-start",
-          marginBottom: 28,
-        }}
-      >
-        <div
-          style={{
-            width: 40,
-            height: 40,
-            borderRadius: 12,
-            background: AMBER_LIGHT,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexShrink: 0,
-          }}
-        >
-          <Check className="w-5 h-5" style={{ color: ICON_COLOR, strokeWidth: 1.75 }} />
-        </div>
-        <div>
-          <p style={{ fontSize: 12, fontWeight: 700, color: "#15113C", marginBottom: 4 }}>
-            Suggested Next Step
-          </p>
-          <p style={{ fontSize: 13, color: "#4B5563", lineHeight: 1.6, margin: 0 }}>
-            {band.action}
-          </p>
-        </div>
-      </div>
+      {/* Action items */}
+      <AssessmentActionItems
+        assessmentId="grat"
+        severity={severity}
+        severityLabel={band.label}
+        severityColor={band.color}
+        severityBg={band.bg}
+        onStartTool={(id) => { onDone(); setTimeout(() => onStartTool?.(id), 100); }}
+        onOpenChat={(prompt) => onOpenChatWithPrompt?.(prompt)}
+      />
 
-      {/* Done */}
-      <button
-        onClick={onDone}
-        style={{
-          width: "100%",
-          padding: "16px",
-          borderRadius: 16,
-          background: PURPLE,
-          color: "white",
-          fontSize: 16,
-          fontWeight: 700,
-          border: "none",
-          cursor: "pointer",
-          fontFamily: "Inter, sans-serif",
-        }}
-      >
+      {/* Done button */}
+      <button onClick={onDone} className="mt-6 w-full py-4 rounded-full"
+        style={{ background: "#8B5CF6", color: "white", fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: 15, border: "none", cursor: "pointer" }}>
         Done
       </button>
     </div>

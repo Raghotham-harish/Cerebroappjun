@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { Shield, ArrowLeft, Check, AlertTriangle } from "lucide-react";
+import { AssessmentActionItems, AssessmentSeverity } from "../AssessmentActionItems";
 
 interface ACEScreenProps {
   onDone: () => void;
+  onStartTool?: (toolId: string) => void;
+  onOpenChatWithPrompt?: (prompt: string) => void;
 }
 
 type View = "intro" | "question" | "result";
@@ -100,7 +103,7 @@ const PURPLE = "#8B5CF6";
 const ICON_COLOR = "#15113C";
 const TEAL_LIGHT = "#CFFAFE";
 
-export function ACEScreen({ onDone }: ACEScreenProps) {
+export function ACEScreen({ onDone, onStartTool, onOpenChatWithPrompt }: ACEScreenProps) {
   const [view, setView] = useState<View>("intro");
   const [answers, setAnswers] = useState<(boolean | null)[]>(new Array(QUESTIONS.length).fill(null));
   const [currentQ, setCurrentQ] = useState(0);
@@ -272,52 +275,63 @@ export function ACEScreen({ onDone }: ACEScreenProps) {
     );
   }
 
-  const score = answers.filter((a) => a === true).length;
-  const band = getBand(score);
+  const aceScore = answers.filter((a) => a === true).length;
+  const band = getBand(aceScore);
+  const aceSeverity: AssessmentSeverity =
+    aceScore === 0 ? "positive" :
+    aceScore <= 2 ? "mild" :
+    aceScore <= 5 ? "moderate" : "high";
 
   return (
-    <div className="min-h-screen flex flex-col items-center px-6 pt-14 pb-10" style={{ background: DONE_BG }}>
-      <div
-        className="flex items-center justify-center mb-6"
-        style={{ width: 120, height: 120, borderRadius: "50%", background: "linear-gradient(135deg, #A78BFA 0%, #7C3AED 100%)", boxShadow: "0 8px 32px rgba(139,92,246,0.35)" }}
-      >
-        <div className="text-center">
-          <span style={{ fontFamily: "Lora, serif", fontSize: 44, fontWeight: 700, color: "#ffffff", display: "block", lineHeight: 1 }}>{score}</span>
-          <span style={{ fontFamily: "Inter, sans-serif", fontSize: 12, color: "rgba(255,255,255,0.75)", display: "block" }}>ACE Score</span>
+    <div className="min-h-screen flex flex-col px-5 pt-14 pb-10" style={{ background: DONE_BG }}>
+      {/* Back button */}
+      <div className="flex justify-between items-center mb-8">
+        <button
+          onClick={onDone}
+          className="w-11 h-11 rounded-2xl flex items-center justify-center"
+          style={{ background: "rgba(255,255,255,0.88)", border: "1.5px solid rgba(139,92,246,0.15)" }}
+          aria-label="Close"
+        >
+          <ArrowLeft className="w-5 h-5" style={{ color: "#15113C", strokeWidth: 1.75 }} />
+        </button>
+        <span style={{ fontFamily: "Inter, sans-serif", fontSize: 13, fontWeight: 600, color: "#9CA3AF" }}>
+          ACE Complete
+        </span>
+        <div style={{ width: 44 }} />
+      </div>
+
+      {/* Completion icon */}
+      <div className="flex flex-col items-center mb-8">
+        <div
+          style={{ width: 80, height: 80, borderRadius: "50%", background: "linear-gradient(135deg, #A78BFA 0%, #8B5CF6 100%)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 8px 24px rgba(139,92,246,0.3)", marginBottom: 16 }}
+        >
+          <Check className="w-9 h-9" style={{ color: "white", strokeWidth: 1.75 }} />
         </div>
-      </div>
-
-      <div className="px-4 py-1 rounded-full mb-4" style={{ background: band.bg }}>
-        <span style={{ fontFamily: "Inter, sans-serif", fontSize: 13, fontWeight: 700, color: band.color, letterSpacing: "0.04em" }}>{band.label}</span>
-      </div>
-
-      <h2 className="mb-3 text-center" style={{ fontFamily: "Lora, serif", fontSize: 22, fontWeight: 600, color: "#15113C" }}>
-        {band.label}
-      </h2>
-      <p className="text-center mb-6 max-w-xs leading-relaxed" style={{ fontFamily: "Inter, sans-serif", fontSize: 14, color: "#4B5563" }}>
-        {band.insight}
-      </p>
-
-      {/* Reminder card */}
-      <div className="w-full max-w-sm rounded-2xl px-5 py-4 mb-5" style={{ background: "rgba(255,255,255,0.7)", border: "1.5px solid rgba(139,92,246,0.15)" }}>
-        <p style={{ fontFamily: "Inter, sans-serif", fontSize: 13, color: "#4B5563", lineHeight: 1.6 }}>
-          <span style={{ fontWeight: 700, color: "#15113C" }}>Important:</span> This score is a starting point for reflection, not a diagnosis. ACE scores do not determine your future. Many people heal from adverse childhood experiences with support.
+        <h2 style={{ fontFamily: "Lora, serif", fontSize: 22, fontWeight: 500, color: "#15113C", textAlign: "center", marginBottom: 6 }}>
+          Assessment complete
+        </h2>
+        <p style={{ fontFamily: "Inter, sans-serif", fontSize: 13, color: "#6B7280", textAlign: "center", maxWidth: 280 }}>
+          {band.insight}
         </p>
       </div>
 
-      <div className="w-full max-w-sm rounded-2xl px-5 py-4 mb-8" style={{ background: "rgba(255,255,255,0.7)" }}>
-        <div className="flex items-start gap-3">
-          <div className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0" style={{ background: TEAL_LIGHT }}>
-            <Check className="w-5 h-5" style={{ color: ICON_COLOR, strokeWidth: 1.75 }} />
-          </div>
-          <div>
-            <p className="mb-1" style={{ fontFamily: "Inter, sans-serif", fontSize: 12, fontWeight: 700, color: "#6B7280", textTransform: "uppercase", letterSpacing: "0.06em" }}>Suggested Next Step</p>
-            <p style={{ fontFamily: "Inter, sans-serif", fontSize: 14, color: "#15113C", lineHeight: 1.5 }}>{band.action}</p>
-          </div>
-        </div>
-      </div>
+      {/* Action items */}
+      <AssessmentActionItems
+        assessmentId="ace"
+        severity={aceSeverity}
+        severityLabel={band.label}
+        severityColor={band.color}
+        severityBg={band.bg}
+        onStartTool={(id) => { onDone(); setTimeout(() => onStartTool?.(id), 100); }}
+        onOpenChat={(prompt) => onOpenChatWithPrompt?.(prompt)}
+      />
 
-      <button className="cb-btn-primary active:scale-95 transition-transform w-full max-w-sm" style={{ background: PURPLE, borderColor: PURPLE }} onClick={onDone}>
+      {/* Done button */}
+      <button
+        onClick={onDone}
+        className="mt-6 w-full py-4 rounded-full"
+        style={{ background: "#8B5CF6", color: "white", fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: 15, border: "none", cursor: "pointer" }}
+      >
         Done
       </button>
     </div>

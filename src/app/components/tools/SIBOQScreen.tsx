@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { Flame, ArrowLeft, Check } from "lucide-react";
+import { AssessmentActionItems, AssessmentSeverity } from "../AssessmentActionItems";
 
 interface SIBOQScreenProps {
   onDone: () => void;
+  onStartTool?: (toolId: string) => void;
+  onOpenChatWithPrompt?: (prompt: string) => void;
 }
 
 type View = "intro" | "question" | "result";
@@ -44,7 +47,7 @@ function getScoreColor(score: number): string {
   return "#DC2626";
 }
 
-export function SIBOQScreen({ onDone }: SIBOQScreenProps) {
+export function SIBOQScreen({ onDone, onStartTool, onOpenChatWithPrompt }: SIBOQScreenProps) {
   const [view, setView] = useState<View>("intro");
   const [selected, setSelected] = useState<number>(-1);
 
@@ -207,44 +210,52 @@ export function SIBOQScreen({ onDone }: SIBOQScreenProps) {
   }
 
   const band = getBand(selected);
+  const severity: AssessmentSeverity =
+    selected <= 2 ? "positive" :
+    selected <= 4 ? "mild" :
+    selected <= 6 ? "moderate" : "high";
 
   return (
-    <div className="min-h-screen flex flex-col items-center px-6 pt-14 pb-10" style={{ background: DONE_BG }}>
-      {/* Big score ring */}
-      <div
-        className="flex items-center justify-center mb-6"
-        style={{ width: 140, height: 140, borderRadius: "50%", background: "linear-gradient(135deg, #A78BFA 0%, #7C3AED 100%)", boxShadow: "0 8px 32px rgba(139,92,246,0.35)" }}
-      >
-        <div className="text-center">
-          <span style={{ fontFamily: "Lora, serif", fontSize: 52, fontWeight: 700, color: "#ffffff", display: "block", lineHeight: 1 }}>{selected}</span>
-          <span style={{ fontFamily: "Inter, sans-serif", fontSize: 13, color: "rgba(255,255,255,0.7)", display: "block" }}>out of 10</span>
+    <div className="min-h-screen flex flex-col px-5 pt-14 pb-10" style={{ background: DONE_BG }}>
+      {/* Header */}
+      <div className="flex justify-between items-center mb-8">
+        <button onClick={onDone} className="w-11 h-11 rounded-2xl flex items-center justify-center"
+          style={{ background: "rgba(255,255,255,0.88)", border: "1.5px solid rgba(139,92,246,0.15)" }} aria-label="Close">
+          <ArrowLeft className="w-5 h-5" style={{ color: "#15113C", strokeWidth: 1.75 }} />
+        </button>
+        <span style={{ fontFamily: "Inter, sans-serif", fontSize: 13, fontWeight: 600, color: "#9CA3AF" }}>
+          Burnout Quick Check Complete
+        </span>
+        <div style={{ width: 44 }} />
+      </div>
+
+      {/* Check circle */}
+      <div className="flex flex-col items-center mb-8">
+        <div style={{ width: 80, height: 80, borderRadius: "50%", background: "linear-gradient(135deg, #A78BFA 0%, #8B5CF6 100%)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 8px 24px rgba(139,92,246,0.3)", marginBottom: 16 }}>
+          <Check className="w-9 h-9" style={{ color: "white", strokeWidth: 1.75 }} />
         </div>
+        <h2 style={{ fontFamily: "Lora, serif", fontSize: 22, fontWeight: 500, color: "#15113C", textAlign: "center", marginBottom: 6 }}>
+          Assessment complete
+        </h2>
+        <p style={{ fontFamily: "Inter, sans-serif", fontSize: 13, color: "#6B7280", textAlign: "center", maxWidth: 280 }}>
+          {band.insight}
+        </p>
       </div>
 
-      <div className="px-4 py-1 rounded-full mb-4" style={{ background: band.bg }}>
-        <span style={{ fontFamily: "Inter, sans-serif", fontSize: 13, fontWeight: 700, color: band.color, letterSpacing: "0.04em" }}>{band.label}</span>
-      </div>
+      {/* Action items */}
+      <AssessmentActionItems
+        assessmentId="siboq"
+        severity={severity}
+        severityLabel={band.label}
+        severityColor={band.color}
+        severityBg={band.bg}
+        onStartTool={(id) => { onDone(); setTimeout(() => onStartTool?.(id), 100); }}
+        onOpenChat={(prompt) => onOpenChatWithPrompt?.(prompt)}
+      />
 
-      <h2 className="mb-3 text-center" style={{ fontFamily: "Lora, serif", fontSize: 22, fontWeight: 600, color: "#15113C" }}>
-        {band.label}
-      </h2>
-      <p className="text-center mb-8 max-w-xs leading-relaxed" style={{ fontFamily: "Inter, sans-serif", fontSize: 14, color: "#4B5563" }}>
-        {band.insight}
-      </p>
-
-      <div className="w-full max-w-sm rounded-2xl px-5 py-4 mb-10" style={{ background: "rgba(255,255,255,0.7)" }}>
-        <div className="flex items-start gap-3">
-          <div className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0" style={{ background: ORANGE_LIGHT }}>
-            <Check className="w-5 h-5" style={{ color: ICON_COLOR, strokeWidth: 1.75 }} />
-          </div>
-          <div>
-            <p className="mb-1" style={{ fontFamily: "Inter, sans-serif", fontSize: 12, fontWeight: 700, color: "#6B7280", textTransform: "uppercase", letterSpacing: "0.06em" }}>Suggested Next Step</p>
-            <p style={{ fontFamily: "Inter, sans-serif", fontSize: 14, color: "#15113C", lineHeight: 1.5 }}>{band.action}</p>
-          </div>
-        </div>
-      </div>
-
-      <button className="cb-btn-primary active:scale-95 transition-transform w-full max-w-sm" style={{ background: PURPLE, borderColor: PURPLE }} onClick={onDone}>
+      {/* Done button */}
+      <button onClick={onDone} className="mt-6 w-full py-4 rounded-full"
+        style={{ background: "#8B5CF6", color: "white", fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: 15, border: "none", cursor: "pointer" }}>
         Done
       </button>
     </div>

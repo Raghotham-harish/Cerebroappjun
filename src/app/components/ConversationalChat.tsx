@@ -49,6 +49,7 @@ import { SleepRitualScreen } from "./tools/SleepRitualScreen";
 import { GratitudeAssessmentScreen } from "./tools/GratitudeAssessmentScreen";
 import { AnxietyAssessmentScreen } from "./tools/AnxietyAssessmentScreen";
 import { TraumaAssessmentScreen } from "./tools/TraumaAssessmentScreen";
+import { AssessmentHubScreen } from "./AssessmentHubScreen";
 import { BurnoutBATScreen } from "./tools/BurnoutBATScreen";
 import { GAD7Screen } from "./tools/GAD7Screen";
 import { DASSScreen } from "./tools/DASSScreen";
@@ -218,11 +219,22 @@ export function ConversationalChat({ oracleName, userName, completedActivity }: 
   const [pointsNotification, setPointsNotification] = useState<{ points: number; category: string } | null>(null);
   const [showBurnoutAnalytics, setShowBurnoutAnalytics] = useState(false);
   const [showGamesHub, setShowGamesHub] = useState(false);
+  const [showAssessmentHub, setShowAssessmentHub] = useState(false);
   const [activeGame, setActiveGame] = useState<string | null>(null);
   const [activeTool, setActiveTool] = useState<string | null>(null);
   const [cardFeedback, setCardFeedback] = useState<Record<number, 'up' | 'down'>>({});
   const [thumbAnimKey, setThumbAnimKey] = useState<Record<string, number>>({});
   const handleTabChange = (tab: typeof activeTab) => { setActiveTool(null); setActiveTab(tab); };
+
+  // Called from assessment result screens to pre-seed an oracle conversation
+  const handleOpenChatWithPrompt = (prompt: string) => {
+    setActiveTool(null);
+    setShowAssessmentHub(false);
+    setActiveTab("chat");
+    setTimeout(() => {
+      handleUserMessage(prompt, false);
+    }, 400);
+  };
 
   // Inject contextual follow-up cards when returning from a completed activity
   useEffect(() => {
@@ -1515,6 +1527,16 @@ export function ConversationalChat({ oracleName, userName, completedActivity }: 
       );
     }
 
+    // Assessment hub
+    if (showAssessmentHub && !activeTool) {
+      return (
+        <AssessmentHubScreen
+          onBack={() => setShowAssessmentHub(false)}
+          onSelectAssessment={(id) => { setActiveTool(id); }}
+        />
+      );
+    }
+
     // Tool inner screens
     const closeTool = () => {
       // Inject contextual follow-up for the completed tool into the chat tab
@@ -1541,23 +1563,24 @@ export function ConversationalChat({ oracleName, userName, completedActivity }: 
     if (activeTool === "grounding") return <CrisisGroundingScreen onDone={closeTool} />;
     if (activeTool === "sleep") return <SleepRitualScreen onDone={closeTool} />;
     if (activeTool === "crisis") return <CrisisGroundingScreen onDone={closeTool} />;
-    if (activeTool === "gratitude-assess") return <GratitudeAssessmentScreen onDone={closeTool} />;
-    if (activeTool === "anxiety-assess") return <AnxietyAssessmentScreen onDone={closeTool} />;
-    if (activeTool === "trauma-assess") return <TraumaAssessmentScreen onDone={closeTool} />;
-    if (activeTool === "burnout-bat") return <BurnoutBATScreen onDone={closeTool} />;
-    if (activeTool === "gad7") return <GAD7Screen onDone={closeTool} />;
-    if (activeTool === "dass") return <DASSScreen onDone={closeTool} />;
-    if (activeTool === "grat") return <GRATScreen onDone={closeTool} />;
-    if (activeTool === "olbi") return <OLBIScreen onDone={closeTool} />;
-    if (activeTool === "cbi") return <CBIScreen onDone={closeTool} />;
-    if (activeTool === "ace") return <ACEScreen onDone={closeTool} />;
-    if (activeTool === "siboq") return <SIBOQScreen onDone={closeTool} />;
-    if (activeTool === "rbst") return <RBSTScreen onDone={closeTool} />;
+    if (activeTool === "gratitude-assess") return <GratitudeAssessmentScreen onDone={closeTool} onStartTool={(id) => setActiveTool(id)} onOpenChatWithPrompt={handleOpenChatWithPrompt} />;
+    if (activeTool === "anxiety-assess") return <AnxietyAssessmentScreen onDone={closeTool} onStartTool={(id) => setActiveTool(id)} onOpenChatWithPrompt={handleOpenChatWithPrompt} />;
+    if (activeTool === "trauma-assess") return <TraumaAssessmentScreen onDone={closeTool} onStartTool={(id) => setActiveTool(id)} onOpenChatWithPrompt={handleOpenChatWithPrompt} />;
+    if (activeTool === "burnout-bat") return <BurnoutBATScreen onDone={closeTool} onStartTool={(id) => setActiveTool(id)} onOpenChatWithPrompt={handleOpenChatWithPrompt} />;
+    if (activeTool === "gad7") return <GAD7Screen onDone={closeTool} onStartTool={(id) => setActiveTool(id)} onOpenChatWithPrompt={handleOpenChatWithPrompt} />;
+    if (activeTool === "dass") return <DASSScreen onDone={closeTool} onStartTool={(id) => setActiveTool(id)} onOpenChatWithPrompt={handleOpenChatWithPrompt} />;
+    if (activeTool === "grat") return <GRATScreen onDone={closeTool} onStartTool={(id) => setActiveTool(id)} onOpenChatWithPrompt={handleOpenChatWithPrompt} />;
+    if (activeTool === "olbi") return <OLBIScreen onDone={closeTool} onStartTool={(id) => setActiveTool(id)} onOpenChatWithPrompt={handleOpenChatWithPrompt} />;
+    if (activeTool === "cbi") return <CBIScreen onDone={closeTool} onStartTool={(id) => setActiveTool(id)} onOpenChatWithPrompt={handleOpenChatWithPrompt} />;
+    if (activeTool === "ace") return <ACEScreen onDone={closeTool} onStartTool={(id) => setActiveTool(id)} onOpenChatWithPrompt={handleOpenChatWithPrompt} />;
+    if (activeTool === "siboq") return <SIBOQScreen onDone={closeTool} onStartTool={(id) => setActiveTool(id)} onOpenChatWithPrompt={handleOpenChatWithPrompt} />;
+    if (activeTool === "rbst") return <RBSTScreen onDone={closeTool} onStartTool={(id) => setActiveTool(id)} onOpenChatWithPrompt={handleOpenChatWithPrompt} />;
 
     return (
       <>
         <ToolsScreen
           onNavigateToGames={() => setShowGamesHub(true)}
+          onOpenAssessmentHub={() => { setShowAssessmentHub(true); }}
           onSelectTool={(toolId) => setActiveTool(toolId)}
           onOpenNotifications={() => { setShowNotifications(true); setActiveTab("profile"); setNotifUnreadCount(0); }}
           notifUnreadCount={notifUnreadCount}

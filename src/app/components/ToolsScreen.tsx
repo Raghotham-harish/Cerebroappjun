@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ClipboardCheck } from "lucide-react";
 import {
   Heart, Wind, Brain, Eye, BookHeart, Target, Calendar, Users, Scan,
   Layers, MessageCircle, Moon, Plus, Gamepad2, ChevronRight,
@@ -19,6 +20,7 @@ interface Tool {
 
 interface ToolsScreenProps {
   onNavigateToGames?: () => void;
+  onOpenAssessmentHub?: () => void;
   onSelectTool?: (toolId: string) => void;
   onOpenNotifications?: () => void;
   notifUnreadCount?: number;
@@ -272,35 +274,25 @@ export function ToolsScreen({ onNavigateToGames, onSelectTool, onOpenNotificatio
     { id: "zer",               name: "Emotional Regulation",          description: "Locate, understand & regulate emotions",   tag: "ZER",     icon: Layers,        category: "practice" },
     { id: "affirmations",      name: "Affirmations",                  description: "Personalized affirmation builder · 3 min", tag: "MIND",    icon: MessageCircle, category: "practice" },
     { id: "sleep",             name: "Sleep Ritual",                  description: "Wind-down & sleep preparation",            tag: "REST",    icon: Moon,          category: "practice" },
-    { id: "gratitude-assess",  name: "Gratitude Assessment",          description: "GQ-6 · Measure gratitude level · 2 min",  tag: "ASSESS",  icon: ClipboardList, category: "assess" },
-    { id: "anxiety-assess",    name: "Anxiety Check-in",              description: "PSWQ · Penn State Worry · 3 min",          tag: "ANXIETY", icon: HeartPulse,    category: "assess" },
-    { id: "trauma-assess",     name: "Trauma Symptoms Check-in",      description: "TSQ · 27-item trauma screen · 5 min",      tag: "TRAUMA",  icon: Shield,        category: "assess" },
-    { id: "burnout-bat",       name: "Burnout Assessment (BAT)",      description: "22-item burnout indicator · 5 min",        tag: "BURNOUT", icon: Flame,         category: "assess" },
-    { id: "gad7",              name: "Anxiety Scale (GAD-7)",         description: "Generalised anxiety · 7 items · 2 min",    tag: "GAD",     icon: HeartPulse,    category: "assess" },
-    { id: "dass",              name: "Depression & Anxiety (DASS)",   description: "Depression · Anxiety · Stress · 42 items", tag: "DASS",    icon: BarChart2,     category: "assess" },
-    { id: "grat",              name: "Gratitude Scale (GRAT)",        description: "Short form · 16 items · 3 min",            tag: "GRAT",    icon: ClipboardList, category: "assess" },
-    { id: "olbi",              name: "Burnout — Oldenburg (OLBI)",    description: "Exhaustion & disengagement · 12 items",    tag: "BURNOUT", icon: Activity,      category: "assess" },
-    { id: "cbi",               name: "Burnout — Copenhagen (CBI)",    description: "Personal · Work · Client · 18 items",      tag: "BURNOUT", icon: List,          category: "assess" },
-    { id: "ace",               name: "Childhood Experiences (ACE)",   description: "Adverse childhood experiences · 10 items", tag: "ACE",     icon: Shield,        category: "assess" },
-    { id: "siboq",             name: "Burnout Quick Check (SIBOQ)",   description: "Single-item fatigue screen · 1 min",       tag: "BURNOUT", icon: Zap,           category: "assess" },
-    { id: "rbst",              name: "Rapid Burnout Screen (RBST)",   description: "4-item burnout risk screen · 2 min",       tag: "BURNOUT", icon: AlertCircle,   category: "assess" },
+
   ];
 
   const sosTool: Tool = { id: "crisis", name: "Micro Grounding", description: "Quick grounding — available anytime", tag: "SOS", icon: Heart, category: "sos" };
 
   const practiceCount = gridTools.filter((t) => t.category === "practice").length;
-  const assessCount   = gridTools.filter((t) => t.category === "assess").length;
+  const TOTAL_ASSESSMENTS = 12;
 
   const CATEGORY_TABS: { id: ToolCategory; label: string; count?: number }[] = [
-    { id: "all",      label: "All",          count: gridTools.length + 1 },
+    { id: "all",      label: "All",          count: practiceCount + 3 },
     { id: "practice", label: "Practice",     count: practiceCount },
-    { id: "assess",   label: "Assessments",  count: assessCount },
+    { id: "assess",   label: "Assessments",  count: TOTAL_ASSESSMENTS },
     { id: "sos",      label: "Urgent",       count: 1 },
   ];
 
   const filteredGridTools = activeCategory === "all" ? gridTools : gridTools.filter((t) => t.category === activeCategory);
-  const showFeatured = activeCategory === "all" || activeCategory === "sos";
-  const showGames    = activeCategory === "all" || activeCategory === "practice";
+  const showFeatured     = activeCategory === "all" || activeCategory === "sos";
+  const showGames        = activeCategory === "all" || activeCategory === "practice";
+  const showAssessments  = activeCategory === "all" || activeCategory === "assess";
 
   const handleToolClick = (toolId: string) => {
     if (onSelectTool) onSelectTool(toolId);
@@ -447,7 +439,34 @@ export function ToolsScreen({ onNavigateToGames, onSelectTool, onOpenNotificatio
             </div>
           )}
 
-          {/* Tool grid */}
+          {/* Assessments hub card */}
+          {showAssessments && (
+            <div className="mb-4">
+              <button
+                onClick={onOpenAssessmentHub}
+                className="w-full p-5 rounded-3xl flex items-center justify-between active:scale-98 transition-transform"
+                style={{ background: "linear-gradient(135deg, #FEF3C7 0%, #FDE68A 60%, #FCD34D 100%)", border: "1.5px solid rgba(180,83,9,0.2)", boxShadow: "0 2px 12px rgba(180,83,9,0.10)" }}
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,255,255,0.6)" }}>
+                    <ClipboardCheck className="w-6 h-6" style={{ color: "#B45309", strokeWidth: 1.75 }} />
+                  </div>
+                  <div className="text-left">
+                    <h3 className="text-base mb-0.5" style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, color: "#15113C" }}>
+                      Wellbeing Assessments
+                    </h3>
+                    <p className="text-xs" style={{ fontFamily: "Inter, sans-serif", color: "#B45309" }}>
+                      12 validated instruments · anxiety · burnout · gratitude
+                    </p>
+                  </div>
+                </div>
+                <ChevronRight className="w-5 h-5 flex-shrink-0" style={{ color: "#B45309", opacity: 0.6, strokeWidth: 1.75 }} />
+              </button>
+            </div>
+          )}
+
+          {/* Tool grid — practice only when assess filter active */}
+          {activeCategory !== "assess" && (
           <div className="grid grid-cols-2 gap-3">
             {filteredGridTools.map((tool) => (
               <button
@@ -513,6 +532,7 @@ export function ToolsScreen({ onNavigateToGames, onSelectTool, onOpenNotificatio
               </p>
             </div>
           </div>
+          )}
         </>
       )}
 

@@ -1,4 +1,5 @@
-import { Sparkles, User, Zap, Grid3x3, MessageSquare } from "lucide-react";
+import { Sparkles, User, Zap, Grid3x3 } from "lucide-react";
+import { AnimatedLogo } from "./AnimatedLogo";
 
 interface BottomNavProps {
   activeTab: "activities" | "chat" | "insights" | "tools" | "profile";
@@ -45,7 +46,7 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
       </button>
 
       <button onClick={() => onTabChange("chat")} style={btnStyle}>
-        <MessageSquare style={{ width: 22, height: 22, color: s("chat").color, strokeWidth: s("chat").stroke }} />
+        <AnimatedLogo size={22} animate={activeTab === "chat"} />
         <span style={{ fontFamily: "Inter, sans-serif", fontSize: 11, color: s("chat").color, fontWeight: s("chat").weight, letterSpacing: "0.03em" }}>CHAT</span>
       </button>
 

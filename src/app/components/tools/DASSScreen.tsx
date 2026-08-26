@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { ChevronLeft, Brain, Wind, Zap, BookOpen, HeartPulse } from "lucide-react";
+import { ChevronLeft, Brain, Wind, Zap, Check } from "lucide-react";
+import { AssessmentActionItems, AssessmentSeverity } from "../AssessmentActionItems";
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const PAGE_BG = "linear-gradient(180deg, #EDE9FE 0%, #F5F3FF 100%)";
@@ -288,7 +289,7 @@ function buildInsight(
 }
 
 // ─── Main component ───────────────────────────────────────────────────────────
-export function DASSScreen({ onDone }: { onDone: () => void }) {
+export function DASSScreen({ onDone, onStartTool, onOpenChatWithPrompt }: { onDone: () => void; onStartTool?: (toolId: string) => void; onOpenChatWithPrompt?: (prompt: string) => void }) {
   type View = "intro" | "question" | "result";
 
   const [view, setView]         = useState<View>("intro");
@@ -378,10 +379,6 @@ export function DASSScreen({ onDone }: { onDone: () => void }) {
   const dBand = getBand("D", dScore);
   const aBand = getBand("A", aScore);
   const sBand = getBand("S", sScore);
-
-  const D_MAX = 14 * 3; // 42
-  const A_MAX = 14 * 3;
-  const S_MAX = 14 * 3;
 
   // ── INTRO VIEW ─────────────────────────────────────────────────────────────
   if (view === "intro") {
@@ -808,347 +805,52 @@ export function DASSScreen({ onDone }: { onDone: () => void }) {
   }
 
   // ── RESULT VIEW ────────────────────────────────────────────────────────────
-  const insight = buildInsight(dBand, aBand, sBand, dScore, aScore, sScore);
+  const maxRaw = Math.max(dScore * 2, aScore * 2, sScore);
+  const severity: AssessmentSeverity =
+    maxRaw <= 9 ? "positive" :
+    maxRaw <= 13 ? "mild" :
+    maxRaw <= 20 ? "moderate" : "high";
+
+  const dominantBand = dScore >= aScore && dScore >= sScore ? dBand
+    : aScore >= sScore ? aBand : sBand;
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: DONE_BG,
-        display: "flex",
-        flexDirection: "column",
-        fontFamily: "Inter, sans-serif",
-      }}
-    >
-      {/* Header */}
-      <div
-        style={{
-          padding: "16px 20px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <BackButton onPress={handleBack} />
-        <span style={{ fontSize: 14, fontWeight: 600, color: ICON_COLOR }}>Results</span>
-        <div style={{ width: 40 }} />
-      </div>
-
-      {/* Scrollable content */}
-      <div
-        style={{
-          flex: 1,
-          overflowY: "auto",
-          padding: "8px 20px 48px",
-          display: "flex",
-          flexDirection: "column",
-          gap: 20,
-          maxWidth: 420,
-          width: "100%",
-          margin: "0 auto",
-        }}
-      >
-        {/* Title */}
-        <div style={{ textAlign: "center", paddingTop: 4 }}>
-          <h2
-            style={{
-              fontFamily: "Lora, Georgia, serif",
-              fontSize: 22,
-              fontWeight: 700,
-              color: ICON_COLOR,
-              margin: 0,
-              marginBottom: 4,
-            }}
-          >
-            DASS-42 Complete
-          </h2>
-          <p style={{ fontSize: 13, color: "#6B7280", margin: 0 }}>
-            Past-week snapshot across three dimensions
-          </p>
-        </div>
-
-        {/* Three score rings */}
-        <div
-          style={{
-            background: "rgba(255,255,255,0.85)",
-            borderRadius: 24,
-            padding: "20px 16px",
-            border: "1.5px solid rgba(0,0,0,0.06)",
-            boxShadow: "0 4px 20px rgba(139,92,246,0.10)",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-around",
-              alignItems: "flex-start",
-            }}
-          >
-            {(
-              [
-                { sub: "D" as Subscale, score: dScore, max: D_MAX, band: dBand },
-                { sub: "A" as Subscale, score: aScore, max: A_MAX, band: aBand },
-                { sub: "S" as Subscale, score: sScore, max: S_MAX, band: sBand },
-              ] as const
-            ).map(({ sub, score, max, band }) => {
-              const cfg = SUBSCALE_CONFIG[sub];
-              return (
-                <div
-                  key={sub}
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    gap: 10,
-                    flex: 1,
-                  }}
-                >
-                  <ScoreRing score={score} maxScore={max} subscale={sub} size={80} />
-
-                  {/* Subscale label */}
-                  <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                    {sub === "D" && <Brain size={11} color={cfg.color} strokeWidth={1.75} />}
-                    {sub === "A" && <Wind size={11} color={cfg.color} strokeWidth={1.75} />}
-                    {sub === "S" && <Zap size={11} color={cfg.color} strokeWidth={1.75} />}
-                    <span style={{ fontSize: 11, fontWeight: 600, color: cfg.textColor }}>
-                      {cfg.label}
-                    </span>
-                  </div>
-
-                  {/* Band chip */}
-                  <div
-                    style={{
-                      background: band.bg,
-                      borderRadius: 20,
-                      padding: "3px 10px",
-                    }}
-                  >
-                    <span
-                      style={{
-                        fontSize: 11,
-                        fontWeight: 700,
-                        color: band.color,
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {band.label}
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Score breakdown detail */}
-        <div
-          style={{
-            background: "rgba(255,255,255,0.75)",
-            borderRadius: 20,
-            overflow: "hidden",
-            border: "1.5px solid rgba(0,0,0,0.06)",
-          }}
-        >
-          {(
-            [
-              { sub: "D" as Subscale, score: dScore, band: dBand, max: D_MAX },
-              { sub: "A" as Subscale, score: aScore, band: aBand, max: A_MAX },
-              { sub: "S" as Subscale, score: sScore, band: sBand, max: S_MAX },
-            ] as const
-          ).map(({ sub, score, band, max }, idx) => {
-            const cfg = SUBSCALE_CONFIG[sub];
-            const pct = (score / max) * 100;
-            return (
-              <div
-                key={sub}
-                style={{
-                  padding: "14px 16px",
-                  borderBottom: idx < 2 ? "1px solid rgba(0,0,0,0.06)" : "none",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    marginBottom: 8,
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <div
-                      style={{
-                        width: 28,
-                        height: 28,
-                        borderRadius: 8,
-                        background: cfg.holderBg,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {sub === "D" && <Brain size={14} color={cfg.color} strokeWidth={1.75} />}
-                      {sub === "A" && <Wind size={14} color={cfg.color} strokeWidth={1.75} />}
-                      {sub === "S" && <Zap size={14} color={cfg.color} strokeWidth={1.75} />}
-                    </div>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: ICON_COLOR }}>
-                      {cfg.label}
-                    </span>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: ICON_COLOR }}>
-                      {score}
-                      <span style={{ fontWeight: 400, color: "#9CA3AF" }}>/{max}</span>
-                    </span>
-                    <div
-                      style={{
-                        background: band.bg,
-                        borderRadius: 12,
-                        padding: "2px 8px",
-                      }}
-                    >
-                      <span style={{ fontSize: 11, fontWeight: 700, color: band.color }}>
-                        {band.label}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                {/* Mini bar */}
-                <div
-                  style={{
-                    height: 5,
-                    borderRadius: 3,
-                    background: "rgba(0,0,0,0.06)",
-                    overflow: "hidden",
-                  }}
-                >
-                  <div
-                    style={{
-                      height: "100%",
-                      width: `${pct}%`,
-                      background: `linear-gradient(90deg, ${cfg.gradStart} 0%, ${cfg.gradEnd} 100%)`,
-                      borderRadius: 3,
-                    }}
-                  />
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Insight card */}
-        <div
-          style={{
-            background: "rgba(255,255,255,0.85)",
-            borderRadius: 20,
-            padding: "16px 18px",
-            border: "1.5px solid rgba(0,0,0,0.06)",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-              marginBottom: 10,
-            }}
-          >
-            <div
-              style={{
-                width: 32,
-                height: 32,
-                borderRadius: 10,
-                background: "#EDE9FE",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flexShrink: 0,
-              }}
-            >
-              <BookOpen size={16} color={ICON_COLOR} strokeWidth={1.75} />
-            </div>
-            <span style={{ fontSize: 13, fontWeight: 700, color: ICON_COLOR }}>
-              Profile Insight
-            </span>
-          </div>
-          <p style={{ fontSize: 13, color: "#4B5563", margin: 0, lineHeight: 1.7 }}>
-            {insight}
-          </p>
-        </div>
-
-        {/* Suggested action card */}
-        <div
-          style={{
-            background: "rgba(255,255,255,0.85)",
-            borderRadius: 20,
-            padding: "16px 18px",
-            border: "1.5px solid rgba(0,0,0,0.06)",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-              marginBottom: 10,
-            }}
-          >
-            <div
-              style={{
-                width: 32,
-                height: 32,
-                borderRadius: 10,
-                background: "#DBEAFE",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flexShrink: 0,
-              }}
-            >
-              <HeartPulse size={16} color={ICON_COLOR} strokeWidth={1.75} />
-            </div>
-            <span style={{ fontSize: 13, fontWeight: 700, color: ICON_COLOR }}>
-              Suggested Next Step
-            </span>
-          </div>
-          <p style={{ fontSize: 13, color: "#4B5563", margin: 0, lineHeight: 1.7 }}>
-            Retake this assessment in 2–4 weeks to track changes. In the meantime, consider keeping a brief daily mood log to surface patterns between sessions.
-          </p>
-        </div>
-
-        {/* Disclaimer */}
-        <p
-          style={{
-            fontSize: 11,
-            color: "#9CA3AF",
-            textAlign: "center",
-            margin: 0,
-            lineHeight: 1.6,
-            padding: "0 8px",
-          }}
-        >
-          This assessment is for informational purposes only and does not constitute clinical diagnosis. If you are in distress, please contact a qualified mental health professional.
-        </p>
-
-        {/* Done button */}
-        <button
-          onClick={onDone}
-          style={{
-            background: PURPLE,
-            color: "#fff",
-            border: "none",
-            borderRadius: 9999,
-            padding: "15px 24px",
-            fontSize: 15,
-            fontWeight: 600,
-            cursor: "pointer",
-            width: "100%",
-            fontFamily: "Inter, sans-serif",
-            boxShadow: "0 4px 16px rgba(139,92,246,0.30)",
-          }}
-        >
-          Done
+    <div className="min-h-screen flex flex-col px-5 pt-14 pb-10" style={{ background: DONE_BG }}>
+      <div className="flex justify-between items-center mb-8">
+        <button onClick={onDone} className="w-11 h-11 rounded-2xl flex items-center justify-center"
+          style={{ background: "rgba(255,255,255,0.88)", border: "1.5px solid rgba(139,92,246,0.15)" }} aria-label="Close">
+          <ChevronLeft className="w-5 h-5" style={{ color: "#15113C", strokeWidth: 1.75 }} />
         </button>
+        <span style={{ fontFamily: "Inter, sans-serif", fontSize: 13, fontWeight: 600, color: "#9CA3AF" }}>DASS-21 Complete</span>
+        <div style={{ width: 44 }} />
       </div>
+
+      <div className="flex flex-col items-center mb-8">
+        <div style={{ width: 80, height: 80, borderRadius: "50%", background: "linear-gradient(135deg, #A78BFA 0%, #8B5CF6 100%)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 8px 24px rgba(139,92,246,0.3)", marginBottom: 16 }}>
+          <Check className="w-9 h-9" style={{ color: "white", strokeWidth: 1.75 }} />
+        </div>
+        <h2 style={{ fontFamily: "Lora, serif", fontSize: 22, fontWeight: 500, color: "#15113C", textAlign: "center", marginBottom: 6 }}>
+          Assessment complete
+        </h2>
+        <p style={{ fontFamily: "Inter, sans-serif", fontSize: 13, color: "#6B7280", textAlign: "center", maxWidth: 280 }}>
+          {buildInsight(dBand, aBand, sBand, dScore, aScore, sScore)}
+        </p>
+      </div>
+
+      <AssessmentActionItems
+        assessmentId="dass"
+        severity={severity}
+        severityLabel={dominantBand.label}
+        severityColor={dominantBand.color}
+        severityBg={dominantBand.bg}
+        onStartTool={(id) => { onDone(); setTimeout(() => onStartTool?.(id), 100); }}
+        onOpenChat={(prompt) => onOpenChatWithPrompt?.(prompt)}
+      />
+
+      <button onClick={onDone} className="mt-6 w-full py-4 rounded-full"
+        style={{ background: "#8B5CF6", color: "white", fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: 15, border: "none", cursor: "pointer" }}>
+        Done
+      </button>
     </div>
   );
 }
